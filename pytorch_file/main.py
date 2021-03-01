@@ -24,6 +24,8 @@ from MODELS.unet_resnet import UnetResnet
 from MODELS.adr_unet import AdrUNet
 from MODELS.r2unet import R2U_Net
 from MODELS.segnet import SegNet
+from MODELS.smaat_unet import SmaAt_UNet
+from MODELS.unetpp import NestedUNet
 from dataset import *
 
 device = torch.device("cuda")
@@ -31,7 +33,8 @@ print("current device is : ", device)
 
 parser = argparse.ArgumentParser(description='PyTorch Liver Training')
 parser.add_argument('-m', '--model', type=str, choices=[
-                    'atten_gate', 'unet', 'unet_resnet', 'stand_alone_self_attention', 'adr_unet', 'r2_unet', 'segnet'], default='unet_resnet')
+                    'atten_gate', 'unet', 'unet_resnet', 'stand_alone_self_attention', 
+                    'adr_unet', 'r2_unet', 'segnet', 'smaat_unet', 'unet++'], default='atten_gate')
 parser.add_argument('-d', '--dataset', type=str,
                     choices=['liver', 'drive'], default='liver')
 parser.add_argument('--ngpu', default=2, type=int, metavar='G',
@@ -60,8 +63,12 @@ elif args.model == 'adr_unet':
     model = AdrUNet()
 elif args.model == 'r2_unet':
     model = R2U_Net(1,1)
+elif args.model == 'smaat_unet':
+    model = SmaAt_UNet(1, 1)
 elif args.model == 'segnet':
     model = SegNet(1,1)
+elif args.model == 'unet++':
+    model = NestedUNet(False, 1, 1)
 elif args.model == 'stand_alone_self_attention':
     model = get_unet_depthwise_light_encoder_attention_with_skip_connections_decoder(
         1, 1)
@@ -178,13 +185,21 @@ def save_model_args(epoch):
         args.dataset, args.model, epoch, args.batch_size), train_f1_score_save)
 
 
+metric = SegmentationMetric(2) # 3表示有3个分类，有几个分类就填几
+
 def train_one_batch(model, x, y, device):
     x, y = x.to(device), y.to(device)
 
     outputs = model(x)
     loss_fn = nn.BCEWithLogitsLoss()
-    # loss_fn = nn.CrossEntropyLoss().cuda()
     loss = loss_fn(outputs, y)
+    # metric.addBatch(outputs, y)
+    # iou = metric.intersectionOverUnion()
+    # dice = metric.diceCofficient()
+    # accuracy = metric.pixelAccuracy()
+    # sensitivity = metric.diceCofficient()
+    # precision = metric.diceCofficient()
+    # metric.reset()
     iou = get_iou_score(outputs, y).mean()
     dice = dice_coef(outputs, y).mean()
     accuracy = get_accuracy(outputs, y)
@@ -195,6 +210,7 @@ def train_one_batch(model, x, y, device):
     loss.backward()
     optimizer.step()
     return loss.item(), iou.item(), dice.item(), accuracy, sensitivity, precision
+    # return loss.item(), iou, dice, accuracy, sensitivity, precision
 
 
 for epoch in range(1, args.epochs + 1):

@@ -208,9 +208,9 @@ class SmaAt_UNet(nn.Module):
 """print layers and params of network"""
 if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = SmaAt_UNet(1, 3).to(device)
+    model = SmaAt_UNet(1, 1).to(device)
     print(model)
-    summary(model,(1,256,256))      # Succeed!
+    summary(model,(1,512,512))      # Succeed!
 
 
 

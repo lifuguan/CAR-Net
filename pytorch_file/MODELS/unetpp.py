@@ -51,9 +51,9 @@ class DoubleConv(nn.Module):
 
 
 class NestedUNet(nn.Module):
-    def __init__(self, args, in_channel, out_channel):
+    def __init__(self, deepsupervision, in_channel, out_channel):
         super().__init__()
-        self.args = args
+        self.deepsupervision = deepsupervision
         nb_filter = [32, 64, 128, 256, 512]
 
         self.pool = nn.MaxPool2d(2, 2)
@@ -79,7 +79,7 @@ class NestedUNet(nn.Module):
 
         self.conv0_4 = DoubleConv(nb_filter[0]*4+nb_filter[1], nb_filter[0])
         self.sigmoid = nn.Sigmoid()
-        if self.args.deepsupervision:
+        if self.deepsupervision:
             self.final1 = nn.Conv2d(nb_filter[0], out_channel, kernel_size=1)
             self.final2 = nn.Conv2d(nb_filter[0], out_channel, kernel_size=1)
             self.final3 = nn.Conv2d(nb_filter[0], out_channel, kernel_size=1)
@@ -108,7 +108,7 @@ class NestedUNet(nn.Module):
         x1_3 = self.conv1_3(torch.cat([x1_0, x1_1, x1_2, self.up(x2_2)], 1))
         x0_4 = self.conv0_4(torch.cat([x0_0, x0_1, x0_2, x0_3, self.up(x1_3)], 1))
 
-        if self.args.deepsupervision:
+        if self.deepsupervision:
             output1 = self.final1(x0_1)
             output1 = self.sigmoid(output1)
             output2 = self.final2(x0_2)
@@ -130,11 +130,9 @@ class NestedUNet(nn.Module):
 if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     parse = argparse.ArgumentParser()
-    args = parse.parse_args()
-    args.deepsupervision = True
-    model = NestedUNet(args, 3, 1).to(device)
+    model = NestedUNet(False, 1, 1).to(device)
     print(model)
-    summary(model,(3,576,576))   #Succeed!
+    summary(model,(1,512,512))   #Succeed!
 
 
 
