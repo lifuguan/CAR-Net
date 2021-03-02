@@ -1,153 +1,286 @@
+
+#
+# Name: Confusion based Metrics for Biomedical Image Segmentation.
+# Descrip: 基于混淆矩阵的图像分割的评价度量标准.
+# Url: https://github.com/jfzhang95/pytorch-deeplab-xception/blob/master/utils/metrics.py
+# Author: Li Hao, Cheng Yong
+# Notes:
+# Date: 2021-03-01
+#
+
+
+import numpy as np
 import torch
 import torch.nn as nn
-import torch.optim
-import numpy as np
 
-class SegmentationMetric(object):
+class Evaluator(object):
     def __init__(self, numClass):
         self.numClass = numClass
-        self.confusionMatrix = np.zeros((self.numClass,)*2)
+        # 每一行之和表示该类别的真实样本数量，每一列之和表示被预测为该类别的样本数量
+        self.confmat = np.zeros((self.numClass,) * 2)
         self.smooth = 1e-6
- 
-    def pixelAccuracy(self):
-        # return all class overall pixel accuracy
-        #  PA = acc = (TP + TN) / (TP + TN + FP + TN)
-        acc = np.diag(self.confusionMatrix).sum() /  self.confusionMatrix.sum()
-        return acc
- 
-    def classPixelAccuracy(self):
-        # return each category pixel accuracy(A more accurate way to call it precision)
-        # acc = (TP) / TP + FP
-        classAcc = np.diag(self.confusionMatrix) / self.confusionMatrix.sum(axis=1)
-        return classAcc # 返回的是一个列表值，如：[0.90, 0.80, 0.96]，表示类别1 2 3各类别的预测准确率
- 
-    def meanPixelAccuracy(self):
-        classAcc = self.classPixelAccuracy()
-        meanAcc = np.nanmean(classAcc) # np.nanmean 求平均值，nan表示遇到Nan类型，其值取为0
-        return meanAcc # 返回单个值，如：np.nanmean([0.90, 0.80, 0.96, nan, nan]) = (0.90 + 0.80 + 0.96） / 3 =  0.89
- 
-    def meanIntersectionOverUnion(self):
-        # IoU = TP / (TP + FP + FN)
-        intersection = np.diag(self.confusionMatrix) # 取对角元素的值，返回列表
-        union = np.sum(self.confusionMatrix, axis=1) + np.sum(self.confusionMatrix, axis=0) - np.diag(self.confusionMatrix) # axis = 1表示混淆矩阵行的值，返回列表； axis = 0表示取混淆矩阵列的值，返回列表 
-        IoU = intersection / union  # 返回列表，其值为各个类别的IoU
-        mIoU = np.nanmean(IoU) # 求各类别IoU的平均
-        return mIoU
 
-    def intersectionOverUnion(self):
+    def set(self, confmat):
+        self.confmat = confmat
+
+    # 计算综合准确度
+    def accuracy(self):
+        # return all class overall pixel accuracy
+        # PA = acc = (TP + TN) / (TP + TN + FP + TN)
+        acc = np.diag(self.confmat).sum() / self.confmat.sum()
+        return acc
+
+    # 计算分类准确度
+    # https://blog.csdn.net/lingzhou33/article/details/87901365
+    def classAccuracy(self):
+        # return each category pixel accuracy(A more accurate way to call it precision)
+        # acc = TP / TP + FP
+        classAcc = np.diag(self.confmat) / self.confmat.sum(axis=1)
+        return classAcc  # 返回的是一个列表值，如：[0.90, 0.80, 0.96]，表示类别1 2 3各类别的预测准确率
+
+    # 计算分类准确度平均值
+    # https://blog.csdn.net/lingzhou33/article/details/87901365
+    def meanAccuracy(self):
+        classAcc = self.classAccuracy()
+        meanAcc = np.nanmean(classAcc)  # np.nanmean 求平均值，nan表示遇到Nan类型，其值取为0
+        return meanAcc  # 返回单个值，如：np.nanmean([0.90, 0.80, 0.96, nan, nan]) = (0.90 + 0.80 + 0.96) / 3 = 0.89
+
+    # 计算各类的IoU值
+    # https://blog.csdn.net/lingzhou33/article/details/87901365
+    def classIoU(self):
         # IoU = TP / (TP + FP + FN)
-        intersection = 2 * np.diag(self.confusionMatrix)[0] # 取对角元素的值中的第一个（为TP）
-        union = np.sum(self.confusionMatrix, axis=1) + np.sum(self.confusionMatrix, axis=0) - np.diag(self.confusionMatrix) # axis = 1表示混淆矩阵行的值，返回列表； axis = 0表示取混淆矩阵列的值，返回列表 
+        intersection = np.diag(self.confmat)  # 取对角元素的值，返回列表
+        union = np.sum(self.confmat, axis=1) + np.sum(self.confmat, axis=0) - np.diag(
+            self.confmat)  # axis = 1表示混淆矩阵行的值，返回列表； axis = 0表示取混淆矩阵列的值，返回列表
         IoU = intersection / union  # 返回列表，其值为各个类别的IoU
         return IoU
 
-    def diceCofficient(self):
-        # IoU = 2 * TP / (2 * TP + FP + FN)
-        intersection = 2 * np.diag(self.confusionMatrix)[0] # 取对角元素的值中的第一个（为TP）
-        union = np.sum(self.confusionMatrix, axis=1) + np.sum(self.confusionMatrix, axis=0) # axis = 1表示混淆矩阵行的值，返回列表； axis = 0表示取混淆矩阵列的值，返回列表 
-        dice = intersection / union  # 其值为dice
-        return dice
+    # 计算各类平均的IoU值
+    # https://blog.csdn.net/lingzhou33/article/details/87901365
+    def meanIoU(self):
+        mIoU = np.nanmean(self.classIoU())  # 求各类别IoU的平均
+        return mIoU
 
-    def genConfusionMatrix(self, imgPredict, imgLabel): # 同FCN中score.py的fast_hist()函数
+    # 生成混淆矩阵
+    def genConfusionMatrix(self, imgPredict, imgLabel):
+        """
+        同FCN中score.py的fast_hist()函数,计算混淆矩阵
+        :param imgPredict:
+        :param imgLabel:
+        :return: 混淆矩阵
+        """
         # remove classes from unlabeled pixels in gt image and predict
         mask = (imgLabel >= 0) & (imgLabel < self.numClass)
         label = self.numClass * imgLabel[mask] + imgPredict[mask]
-        count = np.bincount(label, minlength=self.numClass**2)
-        confusionMatrix = count.reshape(self.numClass, self.numClass)
-        return np.flip(confusionMatrix)
- 
-    def Frequency_Weighted_Intersection_over_Union(self):
-        # FWIOU =     [(TP+FN)/(TP+FP+TN+FN)] *[TP / (TP + FP + FN)]
-        freq = np.sum(self.confusion_matrix, axis=1) / np.sum(self.confusion_matrix)
-        iu = np.diag(self.confusion_matrix) / (
-                np.sum(self.confusion_matrix, axis=1) + np.sum(self.confusion_matrix, axis=0) -
-                np.diag(self.confusion_matrix))
-        FWIoU = (freq[freq > 0] * iu[freq > 0]).sum()
-        return FWIoU
- 
- 
-    def addBatch(self, outputs, labels):
-        assert outputs.shape == labels.shape
-        if torch.is_tensor(outputs):
-            outputs = torch.sigmoid(outputs).data.cpu().numpy().astype(np.int)
-        if torch.is_tensor(labels):
-            labels = labels.data.cpu().numpy().astype(np.int)
-        self.confusionMatrix += self.genConfusionMatrix(outputs, labels)
- 
-    def reset(self):
-        self.confusionMatrix = np.zeros((self.numClass, self.numClass))
- 
+        count = np.bincount(label, minlength=self.numClass ** 2)
+        self.confmat = count.reshape(self.numClass, self.numClass)
+        return self.confmat
+
+    # 频权交并比
+    def fwIoU(self):
+        """
+        FWIoU，频权交并比:为MIoU的一种提升，这种方法根据每个类出现的频率为其设置权重。
+        FWIOU = [(TP+FN)/(TP+FP+TN+FN)] *[TP / (TP + FP + FN)]
+        """
+        freq = np.sum(self.confmat, axis=1) / np.sum(self.confmat)
+        iu = np.diag(self.confmat) / (np.sum(self.confmat, axis=1) + np.sum(self.confmat, axis=0) -
+                                      np.diag(self.confmat))
+        fwIoU = (freq[freq > 0] * iu[freq > 0]).sum()
+        return fwIoU
+
+    def addBatch(self, imgPredict, imgLabel):
+        assert imgPredict.shape == imgLabel.shape
+        self.confmat += self.genConfusionMatrix(imgPredict, imgLabel)  # 得到混淆矩阵
+        return self.confmat
+
+    # 混淆矩阵重置
+    def clear(self):
+        self.confmat = np.zeros((self.numClass, self.numClass))
+
+    # 查准率(实现两分类情况)
+    def precision(self):
+        # precision = TP / (TP + FP)
+        return self.confmat[1][1] / (self.confmat[1][1] + self.confmat[0][1])
+
+    # 查全率(recall), 灵敏性(sensitivity)(实现两分类情况)
+    def recall(self):
+        # recall = TP / (TP + FN)
+        return self.confmat[1][1] / (self.confmat[1][1] + self.confmat[1][0])
+
+    # 特异性(实现两分类情况)
+    def specificity(self):
+        # specificity = TN / (TN + FP)
+        return self.confmat[0][0] / (self.confmat[0][0] + self.confmat[0][1])
+
+    # F1综合评分(实现两分类情况)
+    def f1_score(self):
+        # f1_score = 2 * precision * recall / (precision + recall)
+        return 2 * self.precision() * self.recall() / (self.precision() + self.recall())
+
+    def get_tn(self):
+        return self.confmat[0][0]
+
+    def get_fp(self):
+        return self.confmat[0][1]
+
+    def get_fn(self):
+        return self.confmat[1][0]
+
+    def get_tp(self):
+        return self.confmat[1][1]
 
 
-# IOU指标
-def get_iou_score(outputs, labels):
-    A = labels.squeeze().bool()
-    pred = torch.where(outputs < 0., torch.zeros_like(
-        outputs), torch.ones_like(outputs))
-    B = pred.squeeze().bool()
-    intersection = (A & B).float().sum((1, 2))
-    union = (A | B).float().sum((1, 2))
-    iou = (intersection + 1e-6) / (union + 1e-6)
+# https://www.kaggle.com/iezepov/fast-iou-scoring-metric-in-pytorch-and-numpy
+def iou_torch(outputs: torch.Tensor, labels: torch.Tensor):
+    smooth = 1e-5
+    # H x W shape
+    intersection = (outputs & labels).float().sum()  # Will be zero if Truth=0 or Prediction=0
+    union = (outputs | labels).float().sum()  # Will be zero if both are 0
+    iou = (intersection + smooth) / (union + smooth)  # We smooth our devision to avoid 0/0
     return iou
 
-# DICE指标
-def dice_coef(outputs, labels):#output为预测结果 target为真实结果
-    smooth = 1e-6 #防止0除
+# https://www.kaggle.com/iezepov/fast-iou-scoring-metric-in-pytorch-and-numpy
+def batch_iou_torch(outputs: torch.Tensor, labels: torch.Tensor):
+    smooth = 1e-5
+    # You can comment out this line if you are passing tensors of equal shape
+    # But if you are passing output from UNet or something it will most probably
+    # be with the BATCH x 1 x H x W shape
+    outputs = outputs.squeeze(1)  # BATCH x 1 x H x W => BATCH x H x W
+    intersection = (outputs & labels).float().sum((1, 2))  # Will be zero if Truth=0 or Prediction=0
+    union = (outputs | labels).float().sum((1, 2))  # Will be zzero if both are 0
+    iou = (intersection + smooth) / (union + smooth)  # We smooth our devision to avoid 0/0
+    # thresholded = torch.clamp(20 * (iou - 0.5), 0, 10).ceil() / 10  # This is equal to comparing with thresolds
+    return iou     # thresholded  or thresholded.mean() if you are interested in average across the batch
+
+
+# https://www.kaggle.com/iezepov/fast-iou-scoring-metric-in-pytorch-and-numpy
+def iou_numpy(outputs: np.array, labels: np.array):
+    '''
+    :param outputs: H x W
+    :param labels: H x W
+    :return:
+    '''
+    smooth = 1e-5
+    intersection = (outputs & labels).sum()
+    union = (outputs | labels).sum()
+    iou = (intersection + smooth) / (union + smooth)
+    return iou
+
+
+# https://www.kaggle.com/iezepov/fast-iou-scoring-metric-in-pytorch-and-numpy
+def batch_iou_numpy(outputs: np.array, labels: np.array):
+    '''
+    :param outputs: BATCH x 1 x H x W
+    :param labels: BATCH x H x W
+    :return:
+    '''
+    smooth = 1e-5
+    outputs = outputs.squeeze(1)
+    intersection = (outputs & labels).sum((1, 2))
+    union = (outputs | labels).sum((1, 2))
+    iou = (intersection + smooth) / (union + smooth)
+    # thresholded = np.ceil(np.clip(20 * (iou - 0.5), 0, 10)) / 10
+    return iou   # thresholded or thresholded.mean()
+
+
+# https://github.com/4uiiurz1/pytorch-nested-unet/blob/master/metrics.py
+def iou_score(outputs, labels):
+    smooth = 1e-5
+    '''
+    if torch.is_tensor(output):
+        output = torch.sigmoid(output).data.cpu().numpy()
+    if torch.is_tensor(target):
+        target = target.data.cpu().numpy()
+    output_ = output > 0.5
+    target_ = target > 0.5
+    '''
+    intersection = (outputs & labels).sum()
+    union = (outputs | labels).sum()
+    iou = (intersection + smooth) / (union + smooth)
+    return iou
+
+
+# https://github.com/4uiiurz1/pytorch-nested-unet/blob/master/metrics.py
+def dice_torch(outputs, labels):
+    smooth = 1e-5
+    '''
+    output = torch.sigmoid(output).view(-1).data.cpu().numpy()
+    target = target.view(-1).data.cpu().numpy()
+    '''
+    outputs = outputs.view(-1).data.cpu().numpy()
+    labels = labels.view(-1).data.cpu().numpy()
+    intersection = (outputs * labels).sum()
+    return (2. * intersection + smooth) / (outputs.sum() + labels.sum() + smooth)
+
+
+# https://github.com/4uiiurz1/pytorch-nested-unet/blob/master/metrics.py
+def dice_numpy(outputs, labels):
+    smooth = 1e-5
+    intersection = (outputs * labels).sum()
+    return (2. * intersection + smooth) / (outputs.sum() + labels.sum() + smooth)
+
+# https://github.com/4uiiurz1/pytorch-nested-unet/blob/master/metrics.py
+def dice_coef(outputs, labels):
+    smooth = 1e-6  # 防止0除
     if torch.is_tensor(outputs):
         outputs = torch.sigmoid(outputs).data.cpu().numpy()
     if torch.is_tensor(labels):
         labels = labels.data.cpu().numpy()
-
     intersection = (outputs * labels).sum()
     dice = (2. * intersection + smooth) / (outputs.sum() + labels.sum() + smooth)
-
     return dice
 
-# precision 和 recall 指标
-def precision_and_recall(label_gt, label_pred, n_class):
+
+# https://github.com/Andy-zhujunwen/UNET-ZOO
+def hd_numpy(outputs, labels):
+    hd1 = directed_hausdorff(outputs, labels)[0]
+    hd2 = directed_hausdorff(outputs, labels)[0]
+    return max(hd1, hd2)
+
+
+def precision_and_recall(outputs, labels, n_class):
     from sklearn.metrics import precision_score, recall_score
-    assert len(label_gt) == len(label_pred)
+    assert len(labels) == len(outputs)
     precision = np.zeros(n_class, dtype=np.float32)
     recall = np.zeros(n_class, dtype=np.float32)
-    img_A = np.array(label_gt, dtype=np.float32).flatten()
-    img_B = np.array(label_pred, dtype=np.float32).flatten()
+    img_A = np.array(labels, dtype=np.float32).flatten()
+    img_B = np.array(outputs, dtype=np.float32).flatten()
     precision[:] = precision_score(img_A, img_B, average=None, labels=range(n_class))
     recall[:] = recall_score(img_A, img_B, average=None, labels=range(n_class))
-
     return precision, recall
 
+
 # accuracy指标
-def get_accuracy(outputs,labels,threshold=0.5):
-    outputs = outputs > threshold
+def accuracy_torch(outputs, labels):
+    # outputs = outputs > threshold
     labels = labels == torch.max(labels)
-    corr = torch.sum(outputs==labels)
-    tensor_size = outputs.size(0)*outputs.size(1)*outputs.size(2)*outputs.size(3)
-    acc = float(corr)/float(tensor_size + 1e-6)
+    corr = torch.sum(outputs == labels)
+    tensor_size = outputs.size(0) * outputs.size(1)
+    acc = float(corr) / float(tensor_size + 1e-6)
     # print(corr, tensor_size)
     return acc
 
+
 # sensitivity指标
-# Sensitivity == Recall
-def get_sensitivity(outputs,labels,threshold=0.5):
-    outputs = outputs > threshold
-    labels = labels == torch.max(labels)
+# sensitivity == recall
+def sensitivity_torch(outputs, labels):
     # TP : True Positive
     # FN : False Negative
-    TP = ((outputs==1).byte() + (labels==1).byte()) == 2
-    FN = ((outputs==0).byte() + (labels==1).byte()) == 2
+    TP = ((outputs == 1).byte() + (labels == 1).byte()) == 2
+    FN = ((outputs == 0).byte() + (labels == 1).byte()) == 2
     # print(TP.size(), FN.size())
-    SE = float(torch.sum(TP))/(float(torch.sum(TP+FN)) + 1e-6)     
+    SE = float(torch.sum(TP)) / (float(torch.sum(TP + FN)) + 1e-6)
     return SE
 
-# precision指标
-def get_precision(outputs,labels,threshold=0.5):    
-    outputs = outputs > threshold
-    labels = labels == torch.max(labels)
 
+# precision指标
+def precision_torch(outputs, labels):
+    # outputs = outputs > threshold
+    labels = labels == torch.max(labels)
     # TP : True Positive
     # FP : False Positive
-    TP = ((outputs==1).byte() + (labels==1).byte()) == 2
-    FP = ((outputs==1).byte() + (labels==0).byte()) == 2
-    PC = float(torch.sum(TP))/(float(torch.sum(TP+FP)) + 1e-6)
+    TP = ((outputs == 1).byte() + (labels == 1).byte()) == 2
+    FP = ((outputs == 1).byte() + (labels == 0).byte()) == 2
+    PC = float(torch.sum(TP)) / (float(torch.sum(TP + FP)) + 1e-6)
     # print("precision: ", (outputs==1) + (labels==0), " ", torch.sum(TP+FP), "\n")
     return PC
