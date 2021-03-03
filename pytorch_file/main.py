@@ -45,19 +45,10 @@ def save_model_args(epoch):
     model_path = 'result/{}/{}/epoch_{}_batch_{}_{}.pkl'.format(
         args.dataset, args.model, epoch, args.batch_size, 4)
     # 三个参数：网络参数；优化器参数；epoch
-    state = {'net': model.state_dict(
-    ), 'optimizer': optimizer.state_dict(), 'epoch': epoch}
+    state = {'net': model.state_dict()}
     torch.save(state, model_path)
 
     # 保存训练损失数据和IoU得分数据
-    # train_losses_save = np.array(train_losses)
-    train_ious_save = np.array(train_ious)
-    train_dices_save = np.array(train_dices)
-    train_accuracy_save = np.array(train_accuracy)
-    # train_sensitivity_save = np.array(train_sensitivity)
-    train_precision_save = np.array(train_precision)
-    train_f1_score_save = np.array(train_f1_score)
-
     f = open('result/overview.csv', "r+")
     csv_writer = csv.writer(f)
     reader = csv.reader(f)
@@ -67,23 +58,23 @@ def save_model_args(epoch):
     msg = [args.model,
            sum([p.data.nelement() for p in model.parameters()]),
         #    train_losses_save[-1],
-           train_ious_save[-1],
-           train_dices_save[-1],
-           train_accuracy_save[-1],
+           running_iou[-1],
+           running_dice[-1],
+           running_precision[-1],
         #    train_sensitivity_save[-1],
-           train_precision_save[-1],
-           train_f1_score_save[-1]]
+           running_precision[-1],
+           running_f1_score[-1]]
     csv_writer.writerow(msg)
     f.close()
     print("MSG : ", msg)
 
     # plt.plot(train_losses, label='loss')
-    plt.plot(train_ious, label='IoU')
-    plt.plot(train_dices, label='Dice')
-    plt.plot(train_accuracy, label='Accuracy')
+    plt.plot(running_iou, label='IoU')
+    plt.plot(running_dice, label='Dice')
+    plt.plot(running_accuracy, label='Accuracy')
     # plt.plot(train_sensitivity, label='Sensitvity')
-    plt.plot(train_precision, label='Precision')
-    plt.plot(train_f1_score, label='f1_score')
+    plt.plot(running_precision, label='Precision')
+    plt.plot(running_f1_score, label='f1_score')
     plt.xlabel('Epoch')
     plt.ylabel('Metric')
     plt.title(args.model)
@@ -96,17 +87,17 @@ def save_model_args(epoch):
     # np.save('result/{}/{}/loss_epoch_{}_batch_{}'.format(
     #     args.dataset, args.model, epoch, args.batch_size), train_losses_save)
     np.save('result/{}/{}/iou_epoch_{}_batch_{}'.format(
-        args.dataset, args.model, epoch, args.batch_size), train_ious_save)
+        args.dataset, args.model, epoch, args.batch_size), running_iou)
     np.save('result/{}/{}/dice_epoch_{}_batch_{}'.format(
-        args.dataset, args.model, epoch, args.batch_size), train_dices_save)
+        args.dataset, args.model, epoch, args.batch_size), running_dice)
     np.save('result/{}/{}/accuracy_epoch_{}_batch_{}'.format(
-        args.dataset, args.model, epoch, args.batch_size), train_accuracy_save)
+        args.dataset, args.model, epoch, args.batch_size), running_accuracy)
     # np.save('result/{}/{}/sensitivity_epoch_{}_batch_{}'.format(
     #     args.dataset, args.model, epoch, args.batch_size), train_sensitivity_save)
     np.save('result/{}/{}/precision_epoch_{}_batch_{}'.format(
-        args.dataset, args.model, epoch, args.batch_size), train_precision_save)
+        args.dataset, args.model, epoch, args.batch_size), running_precision)
     np.save('result/{}/{}/f1_score_epoch_{}_batch_{}'.format(
-        args.dataset, args.model, epoch, args.batch_size), train_f1_score_save)
+        args.dataset, args.model, epoch, args.batch_size), running_f1_score)
 
 def modelTraining():
     model.train()  # 一定要表明是训练模式!!!
@@ -124,6 +115,8 @@ def modelTraining():
     print(steps, "steps per epoch")
     metric = Evaluator(2)
     start = time.time()
+    training_iou = []
+    training_loss = []
     for epoch in range(1, args.epochs + 1):
         print('-' * 10)
         print('Epoch {}/{}'.format(epoch, args.epochs))
@@ -143,11 +136,11 @@ def modelTraining():
             optimizer.zero_grad()  # 将模型中的梯度设置为0
             loss.backward()
             optimizer.step()
-            running_iou.append(iou)
-            running_loss.append(loss.item())
+            training_iou.append(iou)
+            training_loss.append(loss.item())
         print('\r{:6.1f} %\tloss {:8.4f}\tIoU {:8.4f}\t{}'.format(
-            100*(step+1)/steps, np.mean(running_loss), np.mean(running_iou), timeSince(start)))
-        scheduler.step(np.mean(running_iou))
+            100*(step+1)/steps, np.mean(training_loss), np.mean(training_iou), timeSince(start)))
+        scheduler.step(np.mean(training_iou))
 
 running_iou = []
 running_dice = []
@@ -170,19 +163,17 @@ def modelValidating():
 
     # 根据batch size提取样本丢进模型里
     for step, (x, y) in enumerate(train_dataloader):
-        if self.args.cuda:
-            x, y = x.cuda(), y.cuda()
+        x, y = x.cuda(), y.cuda()
         
         with torch.no_grad():
-            outputs = self.model(x)
+            outputs = model(x)
         
         pred = outputs.data.cpu().numpy()
         label = y.cpu().numpy()
-        pred = np.argmax(pred, axis=1)
         metric.addBatch(pred, label)
 
         iou = metric.meanIoU()
-        dice = dice_torch()
+        dice = dice_torch(outputs, y)
         accuracy = metric.meanAccuracy()
         f1_score = metric.f1_score()
         precision = metric.precision()
@@ -194,9 +185,9 @@ def modelValidating():
         running_f1_score.append(f1_score)
 
     print('Validation result:\tIoU {:8.4f}\tDice {:6.4f}\taccuracy {:6.4f}\tprecision {:6.4f}\tf1 score {:6.4f}\t{}'.format(
-        100*(step+1)/steps, np.mean(running_iou), np.mean(running_dice), np.mean(running_accuracy), np.mean(running_precision), np.mean(running_f1_score), timeSince(start)))
+    np.mean(running_iou), np.mean(running_dice), np.mean(running_accuracy), np.mean(running_precision), np.mean(running_f1_score), timeSince(start)))
 
-    save_model_args(epoch)
+    save_model_args(50)
 
 
 if __name__ == '__main__':
