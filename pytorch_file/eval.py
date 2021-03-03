@@ -12,6 +12,25 @@
 import numpy as np
 import torch
 import torch.nn as nn
+from torch.nn.functional import cross_entropy
+from torch.nn.modules.loss import _WeightedLoss
+
+# 损失函数
+# https://github.com/jeya-maria-jose/KiU-Net-pytorch
+class LogNLLLoss(_WeightedLoss):
+    __constants__ = ['weight', 'reduction', 'ignore_index']
+
+    def __init__(self, weight=None, size_average=None, reduce=None, reduction=None,
+                 ignore_index=-100):
+        super(LogNLLLoss, self).__init__(weight, size_average, reduce, reduction)
+        self.ignore_index = ignore_index
+
+    def forward(self, y_input, y_target):
+        # y_input = torch.log(y_input + EPSILON)
+        y_target = y_target.long()
+        return cross_entropy(y_input, y_target, weight=self.weight,
+                             ignore_index=self.ignore_index)
+
 
 class Evaluator(object):
     def __init__(self, numClass):
@@ -70,6 +89,8 @@ class Evaluator(object):
         :return: 混淆矩阵
         """
         # remove classes from unlabeled pixels in gt image and predict
+        imgPredict = imgPredict > 0.5
+        imgLabel = imgLabel > 0.5
         mask = (imgLabel >= 0) & (imgLabel < self.numClass)
         label = self.numClass * imgLabel[mask] + imgPredict[mask]
         count = np.bincount(label, minlength=self.numClass ** 2)
@@ -128,6 +149,7 @@ class Evaluator(object):
 
     def get_tp(self):
         return self.confmat[1][1]
+
 
 
 # https://www.kaggle.com/iezepov/fast-iou-scoring-metric-in-pytorch-and-numpy

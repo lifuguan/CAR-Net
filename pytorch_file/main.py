@@ -114,6 +114,7 @@ def modelTraining():
     optimizer = torch.optim.Adam(model.parameters())
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max')
 
+
     liver_dataset = LiverDataset(
         state='train', scale=501 if args.model == "unet_resnet" else 512)
 
@@ -121,8 +122,8 @@ def modelTraining():
         liver_dataset, batch_size=args.batch_size, num_workers=args.workers, pin_memory=True, shuffle=True, drop_last=True)
     steps = liver_dataset.__len__() // args.batch_size
     print(steps, "steps per epoch")
-
     metric = Evaluator(2)
+    start = time.time()
     for epoch in range(1, args.epochs + 1):
         print('-' * 10)
         print('Epoch {}/{}'.format(epoch, args.epochs))
@@ -134,14 +135,16 @@ def modelTraining():
             x, y = x.to(device), y.to(device)
             outputs = model(x)
             loss_fn = nn.BCEWithLogitsLoss()
-            loss = loss_fn(outputs, y).item()
-            metric.addBatch(outputs, y)
+            loss = loss_fn(outputs, y)
+            pred = outputs.data.cpu().numpy()
+            label = y.cpu().numpy()
+            metric.addBatch(pred, label)
             iou = metric.meanIoU()
             optimizer.zero_grad()  # 将模型中的梯度设置为0
             loss.backward()
             optimizer.step()
             running_iou.append(iou)
-            running_loss.append(loss)
+            running_loss.append(loss.item())
         print('\r{:6.1f} %\tloss {:8.4f}\tIoU {:8.4f}\t{}'.format(
             100*(step+1)/steps, np.mean(running_loss), np.mean(running_iou), timeSince(start)))
         scheduler.step(np.mean(running_iou))
@@ -245,9 +248,9 @@ if __name__ == '__main__':
         pass
 
     # 多显卡并行计算
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
     model.to(device=device)
-    model = torch.nn.DataParallel(model, device_ids=list(range(args.ngpu)))
+    # model = torch.nn.DataParallel(model, device_ids=list(range(args.ngpu)))
 
     modelTraining()
 
