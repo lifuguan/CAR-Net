@@ -1,9 +1,9 @@
 {
-  "savedir": "D:/download",
+  "savedir": "result/unetzoo",
   "model": "UNet",
   "dataset": "isbicell",
-  "epochs": 1,
-  "batch_size": 4,
+  "epochs": 40,
+  "batch_size": 2,
   "deepsupervision":0,
   "action": "train&test",
   "threshold": "None"

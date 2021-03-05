@@ -149,5 +149,5 @@ class SegNet(nn.Module):
 """print layers and params of network"""
 if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = SegNet(1,1).to(device)
-    summary(model,(1,512,512))    #Succeed!
+    model = SegNet(3,1).to(device)
+    summary(model,(3,128,128))    #Succeed!

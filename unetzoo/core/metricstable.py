@@ -10,14 +10,15 @@
 
 
 import numpy as np
-from common.utils.expresult import ExpResult
-from common.utils.hyperparams import HyperParams
-
+from utils.expresult import ExpResult
+from utils.hyperparams import HyperParams
+import csv
 
 class MetricsTable(object):
-    def __init__(self, name, result):
+    def __init__(self, name, result, params):
         self.name = name
         self.result = result
+        self.params = params
         self.len = 0
         self.accuracy_list = []
         self.precision_list = []
@@ -80,9 +81,30 @@ class MetricsTable(object):
         self.result.print('avg_dice = %f' % (sum(self.dice_list) / self.len))
         self.result.print('avg_hd = %f' % (sum(self.hd_list) / self.len))
 
+        if self.name == "test_metrics":
+            f = open('result/overview.csv', "r+")
+            csv_writer = csv.writer(f)
+            reader = csv.reader(f)
+            original = list(reader)
+            msg = [self.params.model, self.params.dataset, 40, 
+                sum(self.accuracy_list) / self.len, 
+                sum(self.precision_list) / self.len, 
+                sum(self.sensitivity_list) / self.len,
+                sum(self.specificity_list) / self.len,
+                sum(self.f1_score_list) / self.len,
+                sum(self.meaniou_list) / self.len,
+                sum(self.fwiou_list) / self.len,
+                sum(self.iou_list) / self.len,
+                sum(self.dice_list) / self.len,
+                sum(self.hd_list) / self.len
+            ]
+            csv_writer.writerow(msg)
+            f.close()
+            print("MSG : ", msg)
+
 
 if __name__ == '__main__':
-    params = HyperParams("E:/studio/learn/python/src/lab/unetzoo/config/unet.json")
+    params = HyperParams("config/unet.json")
     result = ExpResult(params)
     table = MetricsTable('test', result)
 

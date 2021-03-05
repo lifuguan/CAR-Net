@@ -19,7 +19,7 @@ class DriveEyeDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
         self.aug = True
-        self.root = r'D:\dataset\biomed\UNetZoo\drive'
+        self.root = r'dataset/drive'
         self.pics, self.masks = self.getDataPath()
         self.img_paths = None
         self.mask_paths = None
@@ -29,10 +29,10 @@ class DriveEyeDataset(data.Dataset):
         self.target_transform = target_transform
 
     def getDataPath(self):
-        self.train_img_paths = glob(self.root + r'\training\images\*')
-        self.train_mask_paths = glob(self.root + r'\training\1st_manual\*')
-        self.val_img_paths = glob(self.root + r'\test\images\*')
-        self.val_mask_paths = glob(self.root + r'\test\1st_manual\*')
+        self.train_img_paths = glob(self.root + r'/training/images/*')
+        self.train_mask_paths = glob(self.root + r'/training/1st_manual/*')
+        self.val_img_paths = glob(self.root + r'/test/images/*')
+        self.val_mask_paths = glob(self.root + r'/test/1st_manual/*')
         self.test_img_paths = self.val_img_paths
         self.test_mask_paths = self.val_mask_paths
         assert self.state == 'train' or self.state == 'val' or self.state == 'test'
@@ -81,7 +81,7 @@ class DSB2018CellDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
         self.aug = True
-        self.root = r'D:\dataset\biomed\UNetZoo\dsb2018_256'
+        self.root = r'dataset/dsb2018'
         self.img_paths = None
         self.mask_paths = None
         self.train_img_paths, self.val_img_paths = None,None
@@ -91,8 +91,8 @@ class DSB2018CellDataset(data.Dataset):
         self.target_transform = target_transform
 
     def getDataPath(self):
-        self.img_paths = glob(self.root + '\images\*')
-        self.mask_paths = glob(self.root + '\masks\*')
+        self.img_paths = glob(self.root + '/images/*')
+        self.mask_paths = glob(self.root + '/masks/*')
         self.train_img_paths, self.val_img_paths, self.train_mask_paths, self.val_mask_paths = \
             train_test_split(self.img_paths, self.mask_paths, test_size=0.2, random_state=41)
         assert self.state == 'train' or self.state == 'val' or self.state == 'test'
@@ -133,8 +133,8 @@ class DSB2018CellDataset(data.Dataset):
 class EsophagusDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
-        self.train_root = r"D:\dataset\biomed\UNetZoo\data_sta_all\train_data"
-        self.val_root = r"D:\dataset\biomed\UNetZoo\data_sta_all\test_data"
+        self.train_root = r"D:/dataset/biomed/UNetZoo/data_sta_all/train_data"
+        self.val_root = r"D:/dataset/biomed/UNetZoo/data_sta_all/test_data"
         self.test_root = self.val_root
         self.pics,self.masks = self.getDataPath()
         self.transform = transform
@@ -182,7 +182,7 @@ class ISBICellDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
         self.aug = True
-        self.root = r'D:\dataset\biomed\UNetZoo\isbi'
+        self.root = r'dataset/isbi'
         self.img_paths = None
         self.mask_paths = None
         self.train_img_paths, self.val_img_paths,self.test_img_paths = None,None,None
@@ -192,12 +192,12 @@ class ISBICellDataset(data.Dataset):
         self.target_transform = target_transform
 
     def getDataPath(self):
-        self.img_paths = glob(self.root + r'\train\images\*')
-        self.mask_paths = glob(self.root + r'\train\label\*')
-        # self.val_img_paths = glob(self.root + r'\val\val_images\*')
-        # self.val_mask_paths = glob(self.root + r'\val\val_mask\*')
-        # self.test_img_paths = glob(self.root + r'\test\test_images\*')
-        # self.test_mask_paths = glob(self.root + r'\test\test_mask\*')
+        self.img_paths = glob(self.root + r'/train/images/*')
+        self.mask_paths = glob(self.root + r'/train/label/*')
+        # self.val_img_paths = glob(self.root + r'/val/val_images/*')
+        # self.val_mask_paths = glob(self.root + r'/val/val_mask/*')
+        # self.test_img_paths = glob(self.root + r'/test/test_images/*')
+        # self.test_mask_paths = glob(self.root + r'/test/test_mask/*')
         self.train_img_paths, self.val_img_paths, self.train_mask_paths, self.val_mask_paths = \
             train_test_split(self.img_paths, self.mask_paths, test_size=0.2, random_state=41)
         self.test_img_paths, self.test_mask_paths = self.val_img_paths,self.val_mask_paths
@@ -241,7 +241,7 @@ class KaggleLungDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
         self.aug = True
-        self.root = r'D:\dataset\biomed\UNetZoo\finding-lungs-in-ct-data'
+        self.root = r'D:/dataset/biomed/UNetZoo/finding-lungs-in-ct-data'
         self.img_paths = None
         self.mask_paths = None
         self.train_img_paths, self.val_img_paths,self.test_img_paths = None,None,None
@@ -251,8 +251,8 @@ class KaggleLungDataset(data.Dataset):
         self.target_transform = target_transform
 
     def getDataPath(self):
-        self.img_paths = glob(self.root + r'\2d_images\*')
-        self.mask_paths = glob(self.root + r'\2d_masks\*')
+        self.img_paths = glob(self.root + r'/2d_images/*')
+        self.mask_paths = glob(self.root + r'/2d_masks/*')
         self.train_img_paths, self.val_img_paths, self.train_mask_paths, self.val_mask_paths = \
             train_test_split(self.img_paths, self.mask_paths, test_size=0.2, random_state=41)
         self.test_img_paths, self.test_mask_paths = self.val_img_paths, self.val_mask_paths
@@ -293,8 +293,8 @@ class KaggleLungDataset(data.Dataset):
 class LiverDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
-        self.train_root = r"D:\dataset\biomed\UNetZoo\liver\train"
-        self.val_root = r"D:\dataset\biomed\UNetZoo\liver\val"
+        self.train_root = r"D:/dataset/biomed/UNetZoo/liver/train"
+        self.val_root = r"D:/dataset/biomed/UNetZoo/liver/val"
         self.test_root = self.val_root
         self.pics,self.masks = self.getDataPath()
         self.transform = transform
@@ -342,7 +342,7 @@ class CornealDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
         self.aug = True
-        self.root = r'D:\dataset\biomed\UNetZoo\corn\Corneal_nerve_curivilinear_segmentation'
+        self.root = r'D:/dataset/biomed/UNetZoo/corn/Corneal_nerve_curivilinear_segmentation'
         self.img_paths = None
         self.mask_paths = None
         self.train_img_paths, self.val_img_paths,self.test_img_paths = None,None,None
@@ -352,12 +352,12 @@ class CornealDataset(data.Dataset):
         self.target_transform = target_transform
 
     def getDataPath(self):
-        self.train_img_paths = glob(self.root + r'\training\train_images\*')
-        self.train_mask_paths = glob(self.root + r'\training\train_mask\*')
-        self.val_img_paths = glob(self.root + r'\val\val_images\*')
-        self.val_mask_paths = glob(self.root + r'\val\val_mask\*')
-        self.test_img_paths = glob(self.root + r'\test\test_images\*')
-        self.test_mask_paths = glob(self.root + r'\test\test_mask\*')
+        self.train_img_paths = glob(self.root + r'/training/train_images/*')
+        self.train_mask_paths = glob(self.root + r'/training/train_mask/*')
+        self.val_img_paths = glob(self.root + r'/val/val_images/*')
+        self.val_mask_paths = glob(self.root + r'/val/val_mask/*')
+        self.test_img_paths = glob(self.root + r'/test/test_images/*')
+        self.test_mask_paths = glob(self.root + r'/test/test_mask/*')
         # self.train_img_paths, self.val_img_paths, self.train_mask_paths, self.val_mask_paths = \
         #     train_test_split(self.img_paths, self.mask_paths, test_size=0.2, random_state=41)
         assert self.state == 'train' or self.state == 'val' or self.state == 'test'

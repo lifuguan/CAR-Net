@@ -28,7 +28,7 @@ def train(device, params, train_dataloader, val_dataloader, model, criterion, op
     num_epochs = params.epochs
     threshold = params.threshold
     loss_list = []
-    epoch_metrics = MetricsTable('epoch_metrics', result)
+    epoch_metrics = MetricsTable('epoch_metrics', result, params)
     for epoch in range(num_epochs):
         model = model.train()
         result.print('Epoch {} / {}'.format(epoch, num_epochs - 1))
@@ -80,7 +80,7 @@ def val(device, params, model, best_iou, val_dataloader, result):
     with torch.no_grad():
         i = 0  # 验证集中第i张图
         cma = ConfusionMetrics(2)
-        val_metrics = MetricsTable('val_metrics', result)
+        val_metrics = MetricsTable('val_metrics', result, params)
         num = len(val_dataloader)  # 验证集图片的总数
         for x, _, pic, mask in val_dataloader:
             x = x.to(device)
@@ -126,7 +126,7 @@ def test(device, params, test_dataloader, model, result):
     with torch.no_grad():
         i = 0  # 测试集中第i张图
         cma = ConfusionMetrics(2)
-        test_metrics = MetricsTable('test_metrics', result)
+        test_metrics = MetricsTable('test_metrics', result, params)
         num = len(test_dataloader)  # 测试集图片的总数
         for pic, _, pic_path, mask_path in test_dataloader:
             pic = pic.to(device)
@@ -166,11 +166,11 @@ def test(device, params, test_dataloader, model, result):
             plt.imshow(Image.open(mask_path[0]), cmap='Greys_r')
 
             if params.dataset == 'driveEye':
-                saved_predict = result.test_dir + '/' + mask_path[0].split('\\')[-1]
+                saved_predict = result.test_dir + '/' + mask_path[0].split('/')[-1]
                 saved_predict = saved_predict.split('.')[0] + '.tif'
                 plt.savefig(saved_predict)
             else:
-                plt.savefig(result.test_dir + '/' + mask_path[0].split('\\')[-1])
+                plt.savefig(result.test_dir + '/' + mask_path[0].split('/')[-1])
 
             result.print('accuracy = {}'.format(accuracy))
             result.print('precision = {}'.format(precision))

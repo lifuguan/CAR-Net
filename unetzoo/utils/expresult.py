@@ -31,7 +31,7 @@ class ExpResult():
         if not os.path.exists(self.base_dir):
             os.makedirs(self.base_dir)
 
-        # 本次实验目录
+        # 实验目录
         timepath = time.strftime("%Y%m%d-%H%M%S", time.localtime())
         self.exp_dir = os.path.join(self.base_dir, timepath + '-' + self.model + "-" + self.dataset)
         if not os.path.exists(self.exp_dir):
@@ -76,24 +76,26 @@ class ExpResult():
         self.test_metrics_file = os.path.join(self.test_dir, "test_metrics.txt")
 
     # 保存实验基本信息
-    def saveexpinfo(self):
+    def expinfo(self):
         with open(self.readme_file, 'a') as f:
-            f.write('=======' * 4 + '\n')
+            f.write('=======' * 5 + '\n')
             f.write("实验名称：%s\n" % self.expname)
             f.write("实验时间：%s\n" % self.exptime)
             f.write("模型名称：%s\n" % self.model)
             f.write("数据集名称：%s\n" % self.dataset)
-            f.write("epochs：%s\n" % self.epochs)
-            f.write("batch_size：%s\n" % self.batch_size)
+            f.write("epochs数目：%s\n" % self.epochs)
+            f.write("batch_size大小：%s\n" % self.batch_size)
             f.write("实验目录：%s\n" % self.exp_dir)
-            f.write('=======' * 4 + '\n')
+            f.write('=======' * 5 + '\n')
+            f.write('\n')
 
     # 保存控制台信息
-    def save(self, str):
+    def print(self, str):
+        print(str)
         with open(self.console_file, 'a') as f:
             f.write(str + '\n')
 
-    # 记录日志信息
+    # 保存日志信息
     def loginfo(self, str):
         logging.info(str)
 
@@ -102,6 +104,7 @@ class ExpResult():
         with open(self.loss_file, 'a') as f:
             f.write(datehint() + ': ' + descrip + '\n')
             f.write(str(loss) + '\n')
+            f.write('\n')
 
     # 保存损失值列表
     def savelosses(self, descrip, losses):
@@ -112,6 +115,7 @@ class ExpResult():
                 s += str(losses[i]) + " ,"
             s += str(losses[len(losses) - 1]) + ']\n'  # 去除单引号，逗号，每行末尾追加换行符
             f.write(s)
+            f.write('\n')
 
     # 绘制损失函数曲线
     def plotloss(self, descrip, losses):
@@ -132,6 +136,7 @@ class ExpResult():
         with open(file, 'a') as f:
             f.write(datehint() + ": " + descrip + '\n')
             f.write(str(metric) + '\n')
+            f.write('\n')
 
     # 保存模型性能度量列表
     def savemetrics(self, train, descrips, *args):
@@ -148,10 +153,11 @@ class ExpResult():
                 f.write(name[n] + '\n')
                 s = '['
                 for i in range(len(v) - 1):
-                    s += str(v[i]) + " ,"
+                    s += str(v[i]) + ", "
                 s += str(v[len(v) - 1]) + ']\n'  # 去除单引号，逗号，每行末尾追加换行符
                 f.write(s)
                 n = n + 1
+            f.write('\n\n')
 
     # 绘制模型性能度量曲线
     def plotmetrics(self, train, descrips, *args):
@@ -198,12 +204,10 @@ class ExpResult():
 if __name__ == '__main__':
     params = HyperParams("E:/studio/learn/python/src/lab/unetzoo/config/unet.json")
     result = ExpResult(params)
-    result.saveexpinfo()
-    print("========start========")
-    result.save("========start========")
-    for i in range(200):
-        print("%i / 200" % (i))
-        result.save("%i / 200" % (i))
+    result.expinfo()
+    result.print("========start========")
+    for i in range(20):
+        result.print("%i / 200" % (i))
         result.loginfo("%i / 200" % (i))
         # 损失值
         result.saveloss('3-6', 0.6)

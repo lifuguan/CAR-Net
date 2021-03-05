@@ -7,7 +7,7 @@
 #
 
 from torch.utils.data import DataLoader
-from unetzoo.core.dataset import *
+from core.dataset import *
 
 
 # 获得数据库实例

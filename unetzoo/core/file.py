@@ -1,6 +1,6 @@
 import cv2
 import imageio
-
+import numpy as np
 
 # 读取mask文件
 # https://github.com/Andy-zhujunwen/UNET-ZOO

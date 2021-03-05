@@ -308,7 +308,6 @@ class CE_Net_backbone_DAC_with_inception(nn.Module):
 
         self.dblock = DACblock_with_inception(512)
 
-
         self.decoder4 = DecoderBlock(512, filters[2])
         self.decoder3 = DecoderBlock(filters[2], filters[1])
         self.decoder2 = DecoderBlock(filters[1], filters[0])
