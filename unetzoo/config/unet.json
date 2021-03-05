@@ -1,0 +1,11 @@
+{
+  "savedir": "D:/download",
+  "model": "UNet",
+  "dataset": "isbicell",
+  "epochs": 1,
+  "batch_size": 4,
+  "deepsupervision":0,
+  "action": "train&test",
+  "threshold": "None"
+}
+

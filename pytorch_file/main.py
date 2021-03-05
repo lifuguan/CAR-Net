@@ -173,7 +173,7 @@ def modelValidating():
         metric.addBatch(pred, label)
 
         iou = metric.meanIoU()
-        dice = dice_torch(outputs, y)
+        dice = dice_coef(outputs, y)
         accuracy = metric.meanAccuracy()
         f1_score = metric.f1_score()
         precision = metric.precision()
