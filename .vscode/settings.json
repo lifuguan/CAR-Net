@@ -1,4 +1,5 @@
 {
     "python.pythonPath": "/home/pc001/anaconda3/envs/xjw_pytorch/bin/python",
-    "jupyter.jupyterServerType": "local"
+    "jupyter.jupyterServerType": "local",
+    "git.ignoreLimitWarning": true
 }

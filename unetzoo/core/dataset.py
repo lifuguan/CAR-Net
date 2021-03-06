@@ -133,8 +133,8 @@ class DSB2018CellDataset(data.Dataset):
 class EsophagusDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
-        self.train_root = r"D:/dataset/biomed/UNetZoo/data_sta_all/train_data"
-        self.val_root = r"D:/dataset/biomed/UNetZoo/data_sta_all/test_data"
+        self.train_root = r"dataset/data_sta_all/train_data"
+        self.val_root = r"dataset/data_sta_all/test_data"
         self.test_root = self.val_root
         self.pics,self.masks = self.getDataPath()
         self.transform = transform
@@ -241,7 +241,7 @@ class KaggleLungDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
         self.aug = True
-        self.root = r'D:/dataset/biomed/UNetZoo/finding-lungs-in-ct-data'
+        self.root = r'dataset/finding-lungs-in-ct-data'
         self.img_paths = None
         self.mask_paths = None
         self.train_img_paths, self.val_img_paths,self.test_img_paths = None,None,None
@@ -293,8 +293,8 @@ class KaggleLungDataset(data.Dataset):
 class LiverDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
-        self.train_root = r"D:/dataset/biomed/UNetZoo/liver/train"
-        self.val_root = r"D:/dataset/biomed/UNetZoo/liver/val"
+        self.train_root = r"dataset/liver/train"
+        self.val_root = r"dataset/liver/val"
         self.test_root = self.val_root
         self.pics,self.masks = self.getDataPath()
         self.transform = transform
@@ -342,7 +342,7 @@ class CornealDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
         self.aug = True
-        self.root = r'D:/dataset/biomed/UNetZoo/corn/Corneal_nerve_curivilinear_segmentation'
+        self.root = r'dataset/corn/Corneal_nerve_curivilinear_segmentation'
         self.img_paths = None
         self.mask_paths = None
         self.train_img_paths, self.val_img_paths,self.test_img_paths = None,None,None

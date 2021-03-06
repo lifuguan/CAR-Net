@@ -25,7 +25,6 @@ if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = '1'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # torch.cuda.empty_cache()
-    print(device)
 
     # 图像预处理
     x_transforms = transforms.Compose([
@@ -37,11 +36,9 @@ if __name__ == '__main__':
 
     # 载入参数
     parser = argparse.ArgumentParser(description='PyTorch Liver Training')
-    parser.add_argument('-m', '--model', type=str, choices=[
-                        'atten_gate', 'UNet', 'unet_resnet', 'stand_alone_self_attention',
-                        'adr_unet', 'r2_unet', 'segnet', 'smaat_unet', 'unet++'], default='UNet')
+    parser.add_argument('-m', '--model', type=str, default='UNet')
     parser.add_argument('-d', '--dataset', type=str,
-                        choices=['liver', 'drive', 'isbicell'], default='isbicell')
+                        choices=['liver', 'drive', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye', 'esophagus'], default='kagglelung')
     parser.add_argument('--ngpu', default=2, type=int, metavar='G',
                         help='number of gpus to use')
     parser.add_argument('-j', '--workers', default=2, type=int, metavar='N',
@@ -55,7 +52,7 @@ if __name__ == '__main__':
     parser.add_argument('--savedir', default='result/unetzoo', type=str)
     parser.add_argument('--deepsupervision', default=0, type=int)
     params = parser.parse_args()
-
+    print("model : {}".format(params.model))
     if params.threshold == "None":
         params.threshold = None
     else:
