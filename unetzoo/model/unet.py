@@ -13,6 +13,7 @@ from functools import partial
 import torch.nn.functional as F
 from torchvision import models
 from torchsummary import summary
+import os
 
 __all__ = ["UNet", "resnet34_unet"]
 
@@ -173,6 +174,7 @@ class resnet34_unet(nn.Module):
 
 """print layers and params of network"""
 if __name__ == '__main__':
+    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = UNet(3, 1).to(device)
     print(model)

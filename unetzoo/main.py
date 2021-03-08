@@ -38,7 +38,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='PyTorch Liver Training')
     parser.add_argument('-m', '--model', type=str, default='UNet')
     parser.add_argument('-d', '--dataset', type=str,
-                        choices=['liver', 'drive', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye', 'esophagus'], default='kagglelung')
+                        choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye', 'esophagus', 'corneal'], default='driveEye')
     parser.add_argument('--ngpu', default=2, type=int, metavar='G',
                         help='number of gpus to use')
     parser.add_argument('-j', '--workers', default=2, type=int, metavar='N',

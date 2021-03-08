@@ -51,7 +51,7 @@ class ConfusionMetrics(object):
         intersection = np.diag(self.confmat)  # 取对角元素的值，返回列表
         union = np.sum(self.confmat, axis=1) + np.sum(self.confmat, axis=0) - np.diag(
             self.confmat)  # axis = 1表示混淆矩阵行的值，返回列表； axis = 0表示取混淆矩阵列的值，返回列表
-        IoU = intersection / union  # 返回列表，其值为各个类别的IoU
+        IoU = intersection / (union + self.smooth)  # 返回列表，其值为各个类别的IoU
         return IoU
 
     # 计算各类平均的IoU值
@@ -99,7 +99,7 @@ class ConfusionMetrics(object):
     # 查准率(实现两分类情况)
     def precision(self):
         # precision = TP / (TP + FP)
-        return self.confmat[1][1] / (self.confmat[1][1] + self.confmat[0][1])
+        return self.confmat[1][1] / (self.confmat[1][1] + self.confmat[0][1] + self.smooth)
 
     # 灵敏性(sensitivity), 查全率(recall), (实现两分类情况)
     def sensitivity(self):
@@ -114,7 +114,7 @@ class ConfusionMetrics(object):
     # F1综合评分(实现两分类情况)
     def f1_score(self):
         # f1_score = 2 * precision * recall / (precision + recall)
-        return 2 * self.precision() * self.sensitivity() / (self.precision() + self.sensitivity())
+        return 2 * self.precision() * self.sensitivity() / (self.precision() + self.sensitivity() + self.smooth)
 
     def get_tn(self):
         return self.confmat[0][0]

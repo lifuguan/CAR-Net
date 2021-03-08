@@ -7,6 +7,7 @@
 # Date: 2021-01-06
 #
 
+import os
 import torch
 import torch.nn as nn
 from torch.hub import load_state_dict_from_url
@@ -421,5 +422,7 @@ def get_fcn8s(n_class=1):
 
 
 if __name__ == '__main__':
-    model = get_fcn32s()
-    print(model)
+    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = get_fcn8s(1).to(device)
+    summary(model, (3, 576, 576))

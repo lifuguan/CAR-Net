@@ -89,10 +89,19 @@ def val(device, params, model, best_iou, val_dataloader, result):
                 img_y = torch.squeeze(y[-1]).cpu().numpy()
             else:
                 img_y = torch.squeeze(y).cpu().numpy()
+
             # 图像二值化处理
             mask_img= read_mask(mask[0])
             image_mask = binary_image(mask_img, 125)
             img_y = binary_image(img_y, 0.5)
+            fig = plt.figure()
+            ax1 = fig.add_subplot(1, 2, 1)
+            ax1.set_title('GT')
+            plt.imshow(image_mask)
+            ax2 = fig.add_subplot(1, 2, 2)
+            ax2.set_title('Predict')
+            plt.imshow(img_y)
+            plt.savefig("result/dataset_test/{}_val.jpg".format(i))
             # 计算度量值
             cma.genConfusionMatrix(img_y.astype(np.int32), image_mask.astype(np.int32))
             accuracy = cma.accuracy()

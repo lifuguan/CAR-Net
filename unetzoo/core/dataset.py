@@ -19,29 +19,44 @@ class DriveEyeDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
         self.aug = True
-        self.root = r'dataset/drive'
+        self.root = r''
+        self.train_root = r"dataset/drive/training"
+        self.val_root = r"dataset/drive/test"
+        self.test_root = self.val_root
         self.pics, self.masks = self.getDataPath()
-        self.img_paths = None
-        self.mask_paths = None
-        self.train_img_paths, self.val_img_paths,self.test_img_paths = None,None,None
-        self.train_mask_paths, self.val_mask_paths,self.test_mask_paths = None,None,None
         self.transform = transform
         self.target_transform = target_transform
 
     def getDataPath(self):
-        self.train_img_paths = glob(self.root + r'/training/images/*')
-        self.train_mask_paths = glob(self.root + r'/training/1st_manual/*')
-        self.val_img_paths = glob(self.root + r'/test/images/*')
-        self.val_mask_paths = glob(self.root + r'/test/1st_manual/*')
-        self.test_img_paths = self.val_img_paths
-        self.test_mask_paths = self.val_mask_paths
-        assert self.state == 'train' or self.state == 'val' or self.state == 'test'
+        pics = []
+        masks = []
+        assert self.state =='train' or self.state == 'val' or self.state == 'test'
         if self.state == 'train':
-            return self.train_img_paths, self.train_mask_paths
+            root = self.train_root
+            n = len(os.listdir(root+"/images/"))
+            for i in range(n):
+                img = os.path.join(root+"/images/", "%d_training.tif" % (i+21)) 
+                mask = os.path.join(root+"/1st_manual/", "%d_manual1.gif" % (i+21))
+                pics.append(img)
+                masks.append(mask)
         if self.state == 'val':
-            return self.val_img_paths, self.val_mask_paths
+            root = self.val_root
+            n = len(os.listdir(root+"/images/"))
+            for i in range(n):
+                img = os.path.join(root+"/images/", "%02d_test.tif" % (i+1)) 
+                mask = os.path.join(root+"/1st_manual/", "%02d_manual1.gif" % (i+1))
+                pics.append(img)
+                masks.append(mask)
         if self.state == 'test':
-            return self.test_img_paths, self.test_mask_paths
+            root = self.test_root
+            n = len(os.listdir(root+"/images/"))
+            for i in range(n):
+                img = os.path.join(root+"/images/", "%02d_test.tif" % (i+1)) 
+                mask = os.path.join(root+"/1st_manual/", "%02d_manual1.gif" % (i+1))
+                pics.append(img)
+                masks.append(mask)
+        
+        return pics,masks
 
     def __getitem__(self, index):
         imgx,imgy=(576,576)
@@ -342,7 +357,7 @@ class CornealDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
         self.aug = True
-        self.root = r'dataset/corn/Corneal_nerve_curivilinear_segmentation'
+        self.root = r'dataset/corn'
         self.img_paths = None
         self.mask_paths = None
         self.train_img_paths, self.val_img_paths,self.test_img_paths = None,None,None
