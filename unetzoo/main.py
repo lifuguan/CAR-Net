@@ -22,7 +22,7 @@ from andytrainer import test
 
 
 if __name__ == '__main__':
-    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # torch.cuda.empty_cache()
 
@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     # 载入参数
     parser = argparse.ArgumentParser(description='PyTorch Liver Training')
-    parser.add_argument('-m', '--model', type=str, default='UNet')
+    parser.add_argument('-m', '--model', type=str, default='kiunet')
     parser.add_argument('-d', '--dataset', type=str,
                         choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye', 'esophagus', 'corneal'], default='driveEye')
     parser.add_argument('--ngpu', default=2, type=int, metavar='G',
@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
     # 准备训练实例,多显卡并行计算
     model = getModel(device, params)
-    # model = torch.nn.DataParallel(model, device_ids=list(range(args.ngpu)))
+    model = torch.nn.DataParallel(model, device_ids=list(range(params.ngpu)))
     
     # print(model)                    # 显示模型信息
     # summary(model, (3, 576, 576))   # 显示模型参数

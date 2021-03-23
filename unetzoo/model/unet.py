@@ -178,4 +178,4 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = UNet(3, 1).to(device)
     print(model)
-    summary(model,(3,512,512))    #Succeed!
+    summary(model,(3,128,128))    #Succeed!

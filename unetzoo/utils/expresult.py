@@ -91,7 +91,6 @@ class ExpResult():
 
     # 保存控制台信息
     def print(self, str):
-        print(str)
         with open(self.console_file, 'a') as f:
             f.write(str + '\n')
 

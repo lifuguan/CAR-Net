@@ -8,7 +8,7 @@
 #
 
 import os
-
+from tqdm import tqdm
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -30,38 +30,43 @@ def train(device, params, train_dataloader, val_dataloader, model, criterion, op
     loss_list = []
     epoch_metrics = MetricsTable('epoch_metrics', result, params)
     for epoch in range(num_epochs):
+        # 标明是训练模式
         model = model.train()
+        
         result.print('Epoch {} / {}'.format(epoch, num_epochs - 1))
         result.print('-' * 15)
         train_size = len(train_dataloader.dataset)
         epoch_loss = 0
         step = 0
-        for x, y, _, mask in train_dataloader:
-            step += 1
-            inputs = x.to(device)
-            labels = y.to(device)
-            # zero the parameter gradients
-            optimizer.zero_grad()
-            if params.deepsupervision:
-                outputs = model(inputs)
-                loss = 0
-                for output in outputs:
-                    loss += criterion(output, labels)
-                loss /= len(outputs)
-            else:
-                output = model(inputs)
-                loss = criterion(output, labels)
+        with tqdm(total=train_size // params.batch_size) as pbar:
+            for x, y, _, mask in train_dataloader:
+                step += 1
+                inputs = x.to(device)
+                labels = y.to(device)
+                # zero the parameter gradients
+                optimizer.zero_grad()
+                if params.deepsupervision:
+                    outputs = model(inputs)
+                    loss = 0
+                    for output in outputs:
+                        loss += criterion(output, labels)
+                    loss /= len(outputs)
+                else:
+                    output = model(inputs)
+                    loss = criterion(output, labels)
 
-            if threshold != None:
-                if loss > threshold:
+                if threshold != None:
+                    if loss > threshold:
+                        loss.backward()
+                        optimizer.step()
+                        epoch_loss += loss.item()
+                else:
                     loss.backward()
                     optimizer.step()
                     epoch_loss += loss.item()
-            else:
-                loss.backward()
-                optimizer.step()
-                epoch_loss += loss.item()
-            result.print("%d / %d, train_loss: %0.3f" % (step, (train_size - 1) // train_dataloader.batch_size + 1, loss.item()))
+                pbar.set_description('epoch %d train_loss: %0.3f' % (epoch, loss.item()))
+                pbar.update(1)
+                result.print("%d / %d, train_loss: %0.3f" % (step, (train_size - 1) // train_dataloader.batch_size + 1, loss.item()))
 
         loss_list.append(epoch_loss)
         best_iou, (avg_accuracy, avg_precision, avg_sensitivity, avg_specificity, avg_f1score, avg_meanIoU, avg_fwIoU, avg_iou, \
@@ -94,14 +99,17 @@ def val(device, params, model, best_iou, val_dataloader, result):
             mask_img= read_mask(mask[0])
             image_mask = binary_image(mask_img, 125)
             img_y = binary_image(img_y, 0.5)
-            fig = plt.figure()
-            ax1 = fig.add_subplot(1, 2, 1)
-            ax1.set_title('GT')
-            plt.imshow(image_mask)
-            ax2 = fig.add_subplot(1, 2, 2)
-            ax2.set_title('Predict')
-            plt.imshow(img_y)
-            plt.savefig("result/dataset_test/{}_val.jpg".format(i))
+
+            # if i < 20:
+            #     fig = plt.figure()
+            #     ax1 = fig.add_subplot(1, 2, 1)
+            #     ax1.set_title('GT')
+            #     plt.imshow(image_mask)
+            #     ax2 = fig.add_subplot(1, 2, 2)
+            #     ax2.set_title('Predict')
+            #     plt.imshow(img_y)
+            #     plt.savefig("result/dataset_test/{}_val.jpg".format(i))
+            
             # 计算度量值
             cma.genConfusionMatrix(img_y.astype(np.int32), image_mask.astype(np.int32))
             accuracy = cma.accuracy()
@@ -120,16 +128,16 @@ def val(device, params, model, best_iou, val_dataloader, result):
         val_metrics.print()
         aver_iou = val_metrics.avg_iou()
         if aver_iou > best_iou:
-            result.print('aver_iou:{} > best_iou:{}'.format(aver_iou, best_iou))
+            print('aver_iou:{} > best_iou:{}'.format(aver_iou, best_iou))
             best_iou = aver_iou
-            result.print('=======>save best model!')
+            print('=======>save best model!')
             result.savemodel(model)
         return best_iou, val_metrics.metrics_mean()
 
 
 # test
 def test(device, params, test_dataloader, model, result):
-    result.print('test start......')
+    print('test start......')
     model = result.loadmodel(model)
     model.eval()
     with torch.no_grad():

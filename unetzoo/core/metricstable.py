@@ -81,26 +81,28 @@ class MetricsTable(object):
         self.result.print('avg_dice = %f' % (sum(self.dice_list) / self.len))
         self.result.print('avg_hd = %f' % (sum(self.hd_list) / self.len))
 
+        msg = [self.params.model, self.params.dataset, 40, 
+            sum(self.accuracy_list) / self.len, 
+            sum(self.precision_list) / self.len, 
+            sum(self.sensitivity_list) / self.len,
+            sum(self.specificity_list) / self.len,
+            sum(self.f1_score_list) / self.len,
+            sum(self.meaniou_list) / self.len,
+            sum(self.fwiou_list) / self.len,
+            sum(self.iou_list) / self.len,
+            sum(self.dice_list) / self.len,
+            sum(self.hd_list) / self.len
+        ]
+        print("MSG : ", msg)
         if self.name == "test_metrics":
             f = open('result/overview.csv', "r+")
             csv_writer = csv.writer(f)
             reader = csv.reader(f)
             original = list(reader)
-            msg = [self.params.model, self.params.dataset, 40, 
-                sum(self.accuracy_list) / self.len, 
-                sum(self.precision_list) / self.len, 
-                sum(self.sensitivity_list) / self.len,
-                sum(self.specificity_list) / self.len,
-                sum(self.f1_score_list) / self.len,
-                sum(self.meaniou_list) / self.len,
-                sum(self.fwiou_list) / self.len,
-                sum(self.iou_list) / self.len,
-                sum(self.dice_list) / self.len,
-                sum(self.hd_list) / self.len
-            ]
+
             csv_writer.writerow(msg)
             f.close()
-            print("MSG : ", msg)
+            
 
 
 if __name__ == '__main__':

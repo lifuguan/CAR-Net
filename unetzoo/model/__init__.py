@@ -18,7 +18,7 @@ from model.unet import resnet34_unet
 from model.unetpp import NestedUNet
 from model.smaat_unet import SmaAt_UNet
 from model.self_attention_unet import get_unet_depthwise_light_encoder_attention_with_skip_connections_decoder
-
+from model.kiunet import kiunet
 # 获得模型实例
 def getModel(device, params):
     if params.model == 'UNet':
@@ -47,4 +47,6 @@ def getModel(device, params):
         model = SmaAt_UNet(3, 1).to(device)
     if params.model == "self_attention_unet":
         model = get_unet_depthwise_light_encoder_attention_with_skip_connections_decoder(3,1).to(device)
+    if params.model == "kiunet":
+        model = kiunet().to(device)
     return model
