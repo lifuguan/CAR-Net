@@ -1,7 +1,7 @@
-python unetzoo/main.py -m kiunet        -d driveEye
-python unetzoo/main.py -m kiunet        -d dsb2018Cell
-python unetzoo/main.py -m kiunet        -d liver
-python unetzoo/main.py -m kiunet        -d isbicell
+python unetzoo/main.py -m Lite_RASPP        -d driveEye
+python unetzoo/main.py -m Lite_RASPP        -d dsb2018Cell
+python unetzoo/main.py -m Lite_RASPP        -d esophagus
+python unetzoo/main.py -m Lite_RASPP        -d isbicell
 
 # python unetzoo/main.py -m UNet        -d corneal
 # python unetzoo/main.py -m resnet34_unet  -d corneal
@@ -16,16 +16,16 @@ python unetzoo/main.py -m kiunet        -d isbicell
 # python unetzoo/main.py -m self_attention_unet -d corneal
 
 # python unetzoo/main.py -m UNet        -d esophagus
-python unetzoo/main.py -m resnet34_unet  -d esophagus
-python unetzoo/main.py -m unet++ -d esophagus
-python unetzoo/main.py -m Attention_UNet -d esophagus
-python unetzoo/main.py -m segnet -d esophagus
-python unetzoo/main.py -m r2unet -d esophagus
-python unetzoo/main.py -m fcn32s -d esophagus
-python unetzoo/main.py -m myChannelUnet -d esophagus
-python unetzoo/main.py -m cenet -d esophagus
-python unetzoo/main.py -m smaatunet -d esophagus
-python unetzoo/main.py -m self_attention_unet -d esophagus
+# python unetzoo/main.py -m resnet34_unet  -d esophagus
+# python unetzoo/main.py -m unet++ -d esophagus
+# python unetzoo/main.py -m Attention_UNet -d esophagus
+# python unetzoo/main.py -m segnet -d esophagus
+# python unetzoo/main.py -m r2unet -d esophagus
+# python unetzoo/main.py -m fcn32s -d esophagus
+# python unetzoo/main.py -m myChannelUnet -d esophagus
+# python unetzoo/main.py -m cenet -d esophagus
+# python unetzoo/main.py -m smaatunet -d esophagus
+# python unetzoo/main.py -m self_attention_unet -d esophagus
 
 
 

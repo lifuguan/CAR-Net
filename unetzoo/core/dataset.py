@@ -59,7 +59,7 @@ class DriveEyeDataset(data.Dataset):
         return pics,masks
 
     def __getitem__(self, index):
-        imgx,imgy=(128,128)
+        imgx,imgy=(576,576)
         pic_path = self.pics[index]
         mask_path = self.masks[index]
         # origin_x = Image.open(x_path)

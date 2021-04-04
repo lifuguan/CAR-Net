@@ -12,6 +12,7 @@ from tqdm import tqdm
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
+from visdom import Visdom
 import torch
 
 from core.confusionmetrics import ConfusionMetrics
@@ -82,6 +83,7 @@ def train(device, params, train_dataloader, val_dataloader, model, criterion, op
 # validation
 def val(device, params, model, best_iou, val_dataloader, result):
     model = model.eval()
+    viz = Visdom(env='main')
     with torch.no_grad():
         i = 0  # 验证集中第i张图
         cma = ConfusionMetrics(2)
@@ -92,24 +94,31 @@ def val(device, params, model, best_iou, val_dataloader, result):
             y = model(x)
             if params.deepsupervision:
                 img_y = torch.squeeze(y[-1]).cpu().numpy()
+                img_x = torch.squeeze(x[-1]).cpu().permute(1,2,0).numpy()
             else:
                 img_y = torch.squeeze(y).cpu().numpy()
+                img_x = torch.squeeze(x).cpu().permute(1,2,0).numpy()
 
             # 图像二值化处理
             mask_img= read_mask(mask[0])
             image_mask = binary_image(mask_img, 125)
             img_y = binary_image(img_y, 0.5)
 
-            # if i < 20:
-            #     fig = plt.figure()
-            #     ax1 = fig.add_subplot(1, 2, 1)
-            #     ax1.set_title('GT')
-            #     plt.imshow(image_mask)
-            #     ax2 = fig.add_subplot(1, 2, 2)
-            #     ax2.set_title('Predict')
-            #     plt.imshow(img_y)
-            #     plt.savefig("result/dataset_test/{}_val.jpg".format(i))
-            
+            if i == 1:
+                fig = plt.figure()
+                ax1 = fig.add_subplot(1, 3, 1)
+                ax1.set_title('Origin')
+                plt.imshow(img_x)
+                ax2 = fig.add_subplot(1, 3, 2)
+                ax2.set_title('GT')
+                plt.imshow(image_mask)
+                ax3 = fig.add_subplot(1, 3, 3)
+                ax3.set_title('Predict')
+                plt.imshow(img_y)
+                assert viz.check_connection()
+                viz.matplot(plt)
+                
+                plt.close()
             # 计算度量值
             cma.genConfusionMatrix(img_y.astype(np.int32), image_mask.astype(np.int32))
             accuracy = cma.accuracy()

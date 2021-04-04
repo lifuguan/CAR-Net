@@ -22,7 +22,7 @@ from andytrainer import test
 
 
 if __name__ == '__main__':
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # torch.cuda.empty_cache()
 
@@ -35,17 +35,17 @@ if __name__ == '__main__':
     y_transforms = transforms.ToTensor()
 
     # 载入参数
-    parser = argparse.ArgumentParser(description='PyTorch Liver Training')
-    parser.add_argument('-m', '--model', type=str, default='kiunet')
+    parser = argparse.ArgumentParser(description='PyTorch Training')
+    parser.add_argument('-m', '--model', type=str, default='Lite_RASPP')
     parser.add_argument('-d', '--dataset', type=str,
-                        choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye', 'esophagus', 'corneal'], default='driveEye')
+                        choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye', 'esophagus', 'corneal'], default='liver')
     parser.add_argument('--ngpu', default=2, type=int, metavar='G',
                         help='number of gpus to use')
     parser.add_argument('-j', '--workers', default=2, type=int, metavar='N',
                         help='number of data loading workers (default: 2)')
     parser.add_argument('--epochs', default=40, type=int, metavar='N',
                         help='number of total epochs to run')
-    parser.add_argument('-b', '--batch-size', default=2, type=int,
+    parser.add_argument('-b', '--batch-size', default=10, type=int,
                         metavar='N', help='mini-batch size (default: 2)')
     parser.add_argument('--threshold', default='None', type=str)
     parser.add_argument('--action', default='train&test', type=str)
@@ -63,7 +63,6 @@ if __name__ == '__main__':
 
     # 准备训练实例,多显卡并行计算
     model = getModel(device, params)
-    model = torch.nn.DataParallel(model, device_ids=list(range(params.ngpu)))
     
     # print(model)                    # 显示模型信息
     # summary(model, (3, 576, 576))   # 显示模型参数

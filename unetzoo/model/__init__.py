@@ -17,8 +17,10 @@ from model.r2unet import R2U_Net
 from model.unet import resnet34_unet
 from model.unetpp import NestedUNet
 from model.smaat_unet import SmaAt_UNet
-from model.self_attention_unet import get_unet_depthwise_light_encoder_attention_with_skip_connections_decoder
+# from model.self_attention_unet import get_unet_depthwise_light_encoder_attention_with_skip_connections_decoder
 from model.kiunet import kiunet
+from model.mobilenetv3_seg import MobileNetV3Seg
+
 # 获得模型实例
 def getModel(device, params):
     if params.model == 'UNet':
@@ -45,8 +47,10 @@ def getModel(device, params):
         model = CE_Net_().to(device)
     if params.model == 'smaatunet':
         model = SmaAt_UNet(3, 1).to(device)
-    if params.model == "self_attention_unet":
-        model = get_unet_depthwise_light_encoder_attention_with_skip_connections_decoder(3,1).to(device)
+    # if params.model == "self_attention_unet":
+    #     model = get_unet_depthwise_light_encoder_attention_with_skip_connections_decoder(3,1).to(device)
     if params.model == "kiunet":
         model = kiunet().to(device)
+    if params.model == "Lite_RASPP":
+        model = MobileNetV3Seg(nclass=1).to(device=device)
     return model
