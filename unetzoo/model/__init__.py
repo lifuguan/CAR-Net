@@ -20,6 +20,9 @@ from model.smaat_unet import SmaAt_UNet
 # from model.self_attention_unet import get_unet_depthwise_light_encoder_attention_with_skip_connections_decoder
 from model.kiunet import kiunet
 from model.mobilenetv3_seg import MobileNetV3Seg
+from model.res2net import Res2NetSeg
+
+from design.attention_design_one import AttentionDesignOne
 
 # 获得模型实例
 def getModel(device, params):
@@ -36,6 +39,8 @@ def getModel(device, params):
         model = SegNet(3, 1).to(device)
     if params.model == 'r2unet':
         model = R2U_Net(3, 1).to(device)
+    if params.model == 'res2net':
+        model = Res2NetSeg([3, 4, 6, 3]).to(device=device)
     if params.model == 'fcn32s':
         model = get_fcn32s(1).to(device)
     if params.model == 'myChannelUnet':
@@ -53,4 +58,6 @@ def getModel(device, params):
         model = kiunet().to(device)
     if params.model == "Lite_RASPP":
         model = MobileNetV3Seg(nclass=1).to(device=device)
+    if params.model == "test":
+        model = AttentionDesignOne(3, 1).to(device)
     return model

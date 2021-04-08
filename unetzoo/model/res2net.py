@@ -8,16 +8,15 @@
 #
 
 
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn import init
 from torchsummary import summary
 
 __all__ = ["Res2Net"]
 
-
-#需要分类的类别数
-classes=5
 
 #SE模块
 class SEModule(nn.Module):
@@ -102,10 +101,10 @@ class Res2NetBottleneck(nn.Module):
 
         return out
 
-class Res2Net(nn.Module):
-    def __init__(self, layers, num_classes, width=16, scales=4, groups=1,
+class Res2NetSeg(nn.Module):
+    def __init__(self, layers, num_classes = 1, width=16, scales=4, groups=1,
                  zero_init_residual=True, se=True, norm_layer=True):
-        super(Res2Net, self).__init__()
+        super(Res2NetSeg, self).__init__()
         if norm_layer:  #BN层
             norm_layer = nn.BatchNorm2d
         #通道数分别为64,128,256,512
@@ -123,9 +122,14 @@ class Res2Net(nn.Module):
         self.layer2 = self._make_layer(Res2NetBottleneck, planes[1], layers[1], stride=2, scales=scales, groups=groups, se=se, norm_layer=norm_layer)
         self.layer3 = self._make_layer(Res2NetBottleneck, planes[2], layers[2], stride=2, scales=scales, groups=groups, se=se, norm_layer=norm_layer)
         self.layer4 = self._make_layer(Res2NetBottleneck, planes[3], layers[3], stride=2, scales=scales, groups=groups, se=se, norm_layer=norm_layer)
-        #自适应平均池化，全连接层
-        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(planes[3] * Res2NetBottleneck.expansion, num_classes)
+
+        mode = "large"
+        self.aux=True
+        self.head = _Head(num_classes, mode)
+        if self.aux:
+            inter_channels = 256 if mode == 'large' else 24
+            self.auxlayer = nn.Conv2d(inter_channels, num_classes, 1)
+        self.activate = nn.Sigmoid()
 
         #初始化
         for m in self.modules():
@@ -160,19 +164,70 @@ class Res2Net(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
+        size_original = x.size()[2:]
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
+        size = x.size()[2:]
+        c1 = self.layer1(x)
+        c2 = self.layer2(c1)
+        c3 = self.layer3(c2)
+        c4 = self.layer4(c3)
+        x = self.head(c4)
+        x = F.interpolate(x, size, mode='bilinear', align_corners=True)
+        outputs = x
 
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
+        if self.aux:
+            auxout = self.auxlayer(c1)
+            auxout = F.interpolate(auxout, size, mode='bilinear', align_corners=True)
+            outputs = outputs +auxout
+        
+        outputs = F.interpolate(outputs, size_original, mode='bilinear', align_corners=True)
+        outputs = self.activate(outputs)
+        return outputs
 
-        x = self.avgpool(x)
-        x = x.view(x.size(0), -1)
-        logits = self.fc(x)
-        probas = nn.functional.softmax(logits, dim=1)
+class _Head(nn.Module):
+    def __init__(self, nclass, mode='small', norm_layer=nn.BatchNorm2d, **kwargs):
+        super(_Head, self).__init__()
+        in_channels = 2048 if mode == 'large' else 576
+        self.lr_aspp = _LRASPP(in_channels, norm_layer, **kwargs)
+        self.project = nn.Conv2d(128, nclass, 1)
 
-        return probas
+    def forward(self, x):
+        x = self.lr_aspp(x)
+        return self.project(x)
+
+
+class _LRASPP(nn.Module):
+    """Lite R-ASPP"""
+
+    def __init__(self, in_channels, norm_layer, **kwargs):
+        super(_LRASPP, self).__init__()
+        out_channels = 128
+        self.b0 = nn.Sequential(
+            nn.Conv2d(in_channels, out_channels, 1, bias=False),
+            norm_layer(out_channels),
+            nn.ReLU(True)
+        )
+        self.b1 = nn.Sequential(
+            nn.AvgPool2d(kernel_size=(16, 16), stride=(8, 10)),  # check it
+            nn.Conv2d(in_channels, out_channels, 1, bias=False),
+            nn.Sigmoid(),
+        )
+
+    def forward(self, x):
+        size = x.size()[2:]
+        feat1 = self.b0(x)
+        feat2 = self.b1(x)
+        feat2 = F.interpolate(feat2, size, mode='bilinear', align_corners=True)
+        x = feat1 * feat2  # check it
+        return x
+
+"""print layers and params of network"""
+if __name__ == '__main__':
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # model = MobileNetV3_Large().to(device=device)
+    model = Res2NetSeg([3, 4, 6, 3]).to(device=device)
+    summary(model,(3, 576, 576)) 

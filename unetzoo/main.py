@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     # 载入参数
     parser = argparse.ArgumentParser(description='PyTorch Training')
-    parser.add_argument('-m', '--model', type=str, default='Lite_RASPP')
+    parser.add_argument('-m', '--model', type=str, default='test')
     parser.add_argument('-d', '--dataset', type=str,
                         choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye', 'esophagus', 'corneal'], default='liver')
     parser.add_argument('--ngpu', default=2, type=int, metavar='G',
@@ -45,7 +45,7 @@ if __name__ == '__main__':
                         help='number of data loading workers (default: 2)')
     parser.add_argument('--epochs', default=40, type=int, metavar='N',
                         help='number of total epochs to run')
-    parser.add_argument('-b', '--batch-size', default=10, type=int,
+    parser.add_argument('-b', '--batch-size', default=2, type=int,
                         metavar='N', help='mini-batch size (default: 2)')
     parser.add_argument('--threshold', default='None', type=str)
     parser.add_argument('--action', default='train&test', type=str)

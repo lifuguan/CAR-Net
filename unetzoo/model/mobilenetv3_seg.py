@@ -227,12 +227,12 @@ class MobileNetV3(nn.Module):
                     nn.init.zeros_(m.bias)
 
 class MobileNetV3Seg(nn.Module):
-    def __init__(self, nclass, backbone='mobilenetv3_large', model_base=False, **kwargs):
+    def __init__(self, nclass, backbone='mobilenetv3_large', **kwargs):
         super(MobileNetV3Seg, self).__init__()
         mode = backbone.split('_')[-1]
         self.model = MobileNetV3(mode=mode, width_mult=1.0, **kwargs)
         self.head = _Head(nclass, mode, **kwargs)
-        self.aux=False
+        self.aux=True
         if self.aux:
             inter_channels = 40 if mode == 'large' else 24
             self.auxlayer = nn.Conv2d(inter_channels, nclass, 1)
@@ -248,12 +248,13 @@ class MobileNetV3Seg(nn.Module):
         c4 = self.model.layer5(c3)
         x = self.head(c4)
         x = F.interpolate(x, size, mode='bilinear', align_corners=True)
-        outputs = self.activate(x)
-
+        outputs = x
+        
         if self.aux:
-            auxout = self.auxlayer(c2)
+            auxout = self.auxlayer(c1)
             auxout = F.interpolate(auxout, size, mode='bilinear', align_corners=True)
             outputs = outputs +auxout
+        outputs = self.activate(outputs)
         return outputs
 
 

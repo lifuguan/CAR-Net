@@ -1,7 +1,10 @@
+# python unetzoo/main.py -m Lite_RASPP        -d liver
+python unetzoo/main.py -m Lite_RASPP        -d isbicell
+python unetzoo/main.py -m Lite_RASPP        -d esophagus
 python unetzoo/main.py -m Lite_RASPP        -d driveEye
 python unetzoo/main.py -m Lite_RASPP        -d dsb2018Cell
-python unetzoo/main.py -m Lite_RASPP        -d esophagus
-python unetzoo/main.py -m Lite_RASPP        -d isbicell
+
+
 
 # python unetzoo/main.py -m UNet        -d corneal
 # python unetzoo/main.py -m resnet34_unet  -d corneal
