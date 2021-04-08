@@ -55,7 +55,10 @@ class AttentionDesignOne(nn.Module):
         self.up9 = nn.ConvTranspose2d(128, 64, 2, stride=2)
         self.conv9 = DoubleConv(128, 64)
         self.conv10 = nn.Conv2d(64, out_ch, 1)
-
+        self.attention1 = AttentionBlock(64, 64)
+        self.attention2 = AttentionBlock(128, 128)
+        self.attention3 = AttentionBlock(256, 256)
+        self.attention4 = AttentionBlock(512, 512)
     def forward(self, x):
         #print(x.shape)
         c1 = self.conv1(x)
@@ -73,17 +76,17 @@ class AttentionDesignOne(nn.Module):
         c5 = self.conv5(p4)
         bottle = self.bottleneck(c5)
         up_6 = self.up6(bottle)
-        merge6 = torch.cat([up_6, c4], dim=1)
-        c6 = self.conv6(merge6)
+        merge6 = self.attention4(c4, bottle)
+        c6 = self.conv6(torch.cat([up_6, merge6], dim = 1))
         up_7 = self.up7(c6)
-        merge7 = torch.cat([up_7, c3], dim=1)
-        c7 = self.conv7(merge7)
+        merge7 = self.attention3(c3, c6)
+        c7 = self.conv7(torch.cat([up_7, merge7], dim = 1))
         up_8 = self.up8(c7)
-        merge8 = torch.cat([up_8, c2], dim=1)
-        c8 = self.conv8(merge8)
+        merge8 = self.attention2(c2, c7)
+        c8 = self.conv8(torch.cat([up_8, merge8], dim = 1))
         up_9 = self.up9(c8)
-        merge9 = torch.cat([up_9, c1], dim=1)
-        c9 = self.conv9(merge9)
+        merge9 = self.attention1(c1, c8)
+        c9 = self.conv9(torch.cat([up_9, merge9], dim = 1))
         c10 = self.conv10(c9)
         out = nn.Sigmoid()(c10)
         return out
@@ -248,4 +251,4 @@ if __name__ == '__main__':
     model = AttentionDesignOne(3, 1).to(device)
     # model = AttentionBlock(64, 64).to(device=device)
     # summary(model,[[64, 256, 256], [128, 128, 128]])    #Succeed!
-    summary(model,[3, 512, 512])    #Succeed!
+    summary(model,(3, 512, 512))    #Succeed!
