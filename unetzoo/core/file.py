@@ -1,3 +1,11 @@
+'''
+Author: your name
+Date: 2021-04-03 22:36:24
+LastEditTime: 2021-04-09 17:52:47
+LastEditors: your name
+Description: In User Settings Edit
+FilePath: /leo/unetzoo/core/file.py
+'''
 import cv2
 import imageio
 import numpy as np
@@ -9,7 +17,7 @@ def read_mask(mask_name):
     if np.all(image_mask == None):
         image_mask = imageio.mimread(mask_name)
         image_mask = np.array(image_mask)[0]
-        image_mask = cv2.resize(image_mask, (576, 576))
+    image_mask = cv2.resize(image_mask, (576, 576))
     return image_mask
 
 # 创建二进制图像文件

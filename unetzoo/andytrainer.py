@@ -101,7 +101,7 @@ def val(device, params, model, best_iou, val_dataloader, result):
 
             # 图像二值化处理
             mask_img= read_mask(mask[0])
-            image_mask = binary_image(mask_img, 125)
+            image_mask = binary_image(mask_img, 30)  # check it 
             img_y = binary_image(img_y, 0.5)
 
             if i == 1:

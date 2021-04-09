@@ -353,6 +353,8 @@ class LiverDataset(data.Dataset):
         return len(self.pics)
 
 
+
+
 class CornealDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
@@ -409,6 +411,57 @@ class CornealDataset(data.Dataset):
         return len(self.pics)
 
 
+class RaceCarDataset(data.Dataset):
+    def __init__(self, state, transform=None, target_transform=None):
+        self.state = state
+        self.train_root = r"dataset/RaceCar/train"
+        self.val_root = r"dataset/RaceCar/val"
+        self.test_root = self.val_root
+        self.pics,self.masks = self.getDataPath()
+        self.transform = transform
+        self.target_transform = target_transform
+
+    def getDataPath(self):
+        assert self.state =='train' or self.state == 'val' or self.state =='test'
+        if self.state == 'train':
+            root = self.train_root
+        if self.state == 'val':
+            root = self.val_root
+        if self.state == 'test':
+            root = self.test_root
+
+        pics = []
+        masks = []
+        n = len(os.listdir(root)) // 3  # 因为数据集中一套训练数据包含有训练图和mask图，所以要除2
+        for i in range(n):
+            img = os.path.join(root, "%04d.jpg" % (i+10))  # liver is %03d
+            mask = os.path.join(root, "%04d_mask.jpg" % (i+10))
+            pics.append(img)
+            masks.append(mask)
+            #imgs.append((img, mask))
+        return pics,masks
+
+    def __getitem__(self, index):
+        imgx,imgy=(576,576)
+        pic_path = self.pics[index]
+        mask_path = self.masks[index]
+        pic = cv2.imread(pic_path)
+        mask = cv2.imread(mask_path,cv2.COLOR_BGR2GRAY)
+        mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
+        _,mask = cv2.threshold(mask, 30,255,cv2.THRESH_BINARY)
+        # if mask == None:
+        #     mask = imageio.mimread(mask_path)
+        #     mask = np.array(mask)[0]
+        pic = cv2.resize(pic,(imgx,imgy))
+        mask = cv2.resize(mask, (imgx, imgy))
+        if self.transform is not None:
+            img_x = self.transform(pic)
+        if self.target_transform is not None:
+            img_y = self.target_transform(mask)
+        return img_x, img_y,pic_path,mask_path
+
+    def __len__(self):
+        return len(self.pics)
 
 
 

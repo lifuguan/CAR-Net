@@ -1,3 +1,11 @@
+'''
+Author: your name
+Date: 2021-04-03 22:36:24
+LastEditTime: 2021-04-09 17:05:34
+LastEditors: Please set LastEditors
+Description: In User Settings Edit
+FilePath: /leo/unetzoo/core/__init__.py
+'''
 # -*- coding: utf-8 -*-
 
 #
@@ -59,4 +67,10 @@ def getDataset(params, x_transforms, y_transforms):
         val_dataloaders = DataLoader(val_dataset, batch_size=1)
         test_dataset = KaggleLungDataset(r"test", transform=x_transforms, target_transform=y_transforms)
         test_dataloaders = DataLoader(test_dataset, batch_size=1)
+    if params.dataset == "racecar":
+        train_dataset = RaceCarDataset(r"train", transform=x_transforms, target_transform=y_transforms)
+        train_dataloaders = DataLoader(train_dataset, batch_size=params.batch_size)
+        val_dataset = RaceCarDataset(r"val", transform=x_transforms, target_transform=y_transforms)
+        val_dataloaders = DataLoader(val_dataset, batch_size=1)
+        test_dataloaders = val_dataloaders
     return train_dataloaders, val_dataloaders, test_dataloaders

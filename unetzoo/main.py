@@ -36,9 +36,9 @@ if __name__ == '__main__':
 
     # 载入参数
     parser = argparse.ArgumentParser(description='PyTorch Training')
-    parser.add_argument('-m', '--model', type=str, default='test')
+    parser.add_argument('-m', '--model', type=str, default='Lite_RASPP')
     parser.add_argument('-d', '--dataset', type=str,
-                        choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye', 'esophagus', 'corneal'], default='liver')
+                        choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye', 'esophagus', 'corneal', 'racecar'], default='racecar')
     parser.add_argument('--ngpu', default=2, type=int, metavar='G',
                         help='number of gpus to use')
     parser.add_argument('-j', '--workers', default=2, type=int, metavar='N',
