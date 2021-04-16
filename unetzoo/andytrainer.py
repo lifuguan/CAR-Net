@@ -19,6 +19,9 @@ from core.confusionmetrics import ConfusionMetrics
 from core.file import read_mask, binary_image
 from core.segmetrics import get_dice, get_iou, get_hd
 
+# active contour loss function
+from core.aceloss import ACELoss
+
 # training function
 from core.metricstable import MetricsTable
 
@@ -30,6 +33,7 @@ def train(device, params, train_dataloader, val_dataloader, model, criterion, op
     threshold = params.threshold
     loss_list = []
     epoch_metrics = MetricsTable('epoch_metrics', result, params)
+
     for epoch in range(num_epochs):
         # 标明是训练模式
         model = model.train()
@@ -54,7 +58,8 @@ def train(device, params, train_dataloader, val_dataloader, model, criterion, op
                     loss /= len(outputs)
                 else:
                     output = model(inputs)
-                    loss = criterion(output, labels)
+                    # loss = criterion(output, labels) + ACELoss(output, labels)
+                    loss = ACELoss(output, labels)
 
                 if threshold != None:
                     if loss > threshold:
