@@ -1,3 +1,11 @@
+'''
+Author: your name
+Date: 2021-04-03 22:36:24
+LastEditTime: 2021-04-16 16:40:24
+LastEditors: Please set LastEditors
+Description: In User Settings Edit
+FilePath: /leo/unetzoo/model/__init__.py
+'''
 # -*- coding: utf-8 -*-
 
 #
@@ -58,6 +66,6 @@ def getModel(device, params):
         model = kiunet().to(device)
     if params.model == "Lite_RASPP":
         model = MobileNetV3Seg(nclass=1).to(device=device)
-    if params.model == "test":
+    if params.model == "design_one":
         model = AttentionDesignOne(3, 1).to(device)
     return model

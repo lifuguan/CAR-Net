@@ -58,8 +58,10 @@ def train(device, params, train_dataloader, val_dataloader, model, criterion, op
                     loss /= len(outputs)
                 else:
                     output = model(inputs)
-                    # loss = criterion(output, labels) + ACELoss(output, labels)
-                    loss = ACELoss(output, labels)
+                    if params.loss == "BCE":
+                        loss = criterion(output, labels) + ACELoss(output, labels)
+                    elif params.loss == "ACELoss":
+                        loss = ACELoss(output, labels)
 
                 if threshold != None:
                     if loss > threshold:

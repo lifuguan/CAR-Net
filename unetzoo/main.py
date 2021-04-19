@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-04-16 09:55:37
+LastEditTime: 2021-04-18 21:57:53
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/main.py
@@ -44,16 +44,17 @@ if __name__ == '__main__':
 
     # 载入参数
     parser = argparse.ArgumentParser(description='PyTorch Training')
-    parser.add_argument('-m', '--model', type=str, default='test')
+    parser.add_argument('-m', '--model', type=str, default='UNet')
+    parser.add_argument('-l', '--loss', type=str, choices=['BCE', 'ACELoss'], default='ACELoss')
     parser.add_argument('-d', '--dataset', type=str,
                         choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye', 'esophagus', 'corneal', 'racecar'], default='driveEye')
     parser.add_argument('--ngpu', default=2, type=int, metavar='G',
                         help='number of gpus to use')
-    parser.add_argument('-j', '--workers', default=2, type=int, metavar='N',
+    parser.add_argument('-j', '--workers', default=8, type=int, metavar='N',
                         help='number of data loading workers (default: 2)')
     parser.add_argument('--epochs', default=40, type=int, metavar='N',
                         help='number of total epochs to run')
-    parser.add_argument('-b', '--batch-size', default=2, type=int,
+    parser.add_argument('-b', '--batch-size', default=4, type=int,
                         metavar='N', help='mini-batch size (default: 2)')
     parser.add_argument('--threshold', default='None', type=str)
     parser.add_argument('--action', default='train&test', type=str)

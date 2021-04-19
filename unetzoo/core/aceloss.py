@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-15 20:04:53
-LastEditTime: 2021-04-15 22:20:56
+LastEditTime: 2021-04-19 19:14:50
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/core/aceloss.py
@@ -18,15 +18,19 @@ def ACELoss(y_pred, y_true, u=1, a=1, b=1):
     based on total variations and mean curvature
     """
     def first_derivative(input):
+        """
+        一阶微分
+        """
         u = input
-        m = u.shape[2]
-        n = u.shape[3]
+        m = u.shape[2]  # 获取高
+        n = u.shape[3]  # 获取宽
 
-        ci_0 = (u[:, :, 1, :] - u[:, :, 0, :]).unsqueeze(2)
-        ci_1 = u[:, :, 2:, :] - u[:, :, 0:m - 2, :]
-        ci_2 = (u[:, :, -1, :] - u[:, :, m - 2, :]).unsqueeze(2)
-        ci = torch.cat([ci_0, ci_1, ci_2], 2) / 2
+        ci_0 = (u[:, :, 1, :] - u[:, :, 0, :]).unsqueeze(2) # Height方向梯度，且i=0
+        ci_1 = u[:, :, 2:, :] - u[:, :, 0:m - 2, :]      # Height方向梯度，且i=2:m-1
+        ci_2 = (u[:, :, -1, :] - u[:, :, m - 2, :]).unsqueeze(2) # Height方向梯度，且i=m
+        ci = torch.cat([ci_0, ci_1, ci_2], 2) / 2   # 在Height处concat
 
+        # 在width方向求梯度
         cj_0 = (u[:, :, :, 1] - u[:, :, :, 0]).unsqueeze(3)
         cj_1 = u[:, :, :, 2:] - u[:, :, :, 0:n - 2]
         cj_2 = (u[:, :, :, -1] - u[:, :, :, n - 2]).unsqueeze(3)
@@ -67,22 +71,22 @@ def ACELoss(y_pred, y_true, u=1, a=1, b=1):
 
     def region(y_pred, y_true, u=1):
         label = y_true.float()
-        c_in = torch.ones_like(y_pred)
-        c_out = torch.zeros_like(y_pred)
+        c_in = torch.ones_like(y_pred)   # 生成大小和y_pred大小相同，全为1的张量
+        c_out = torch.zeros_like(y_pred) # 生成大小和y_pred大小相同，全为0的张量
         region_in = torch.abs(torch.sum(y_pred * ((label - c_in) ** 2)))
         region_out = torch.abs(
             torch.sum((1 - y_pred) * ((label - c_out) ** 2)))
         region = u * region_in + region_out
         return region
 
-    def elastica(input, a=1, b=1):
-        ci, cj = first_derivative(input)
-        cii, cjj, cij = second_derivative(input, ci, cj)
+    def elastica(input, a=0.001, b=2):
+        ci, cj = first_derivative(input)  # 一阶偏导
+        cii, cjj, cij = second_derivative(input, ci, cj) # 二阶偏导
         beta = 1e-8
         length = torch.sqrt(beta + ci ** 2 + cj ** 2)
-        curvature = (beta + ci ** 2) * cjj + \
-                    (beta + cj ** 2) * cii - 2 * ci * cj * cij
-        curvature = torch.abs(curvature) / ((ci ** 2 + cj ** 2) ** 1.5 + beta)
+        curvature = (beta + 1 + ci ** 2) * cjj + \                    
+                    (beta + 1 + cj ** 2) * cii - 2 * ci * cj * cij     # 与论文不一样，缺少 +1
+        curvature = torch.abs(curvature) / ((ci ** 2 + cj ** 2) ** 1.5 + 1 + beta) # 与论文不一样，缺少 +1
         elastica = torch.sum((a + b * (curvature ** 2)) * torch.abs(length))
         return elastica
 

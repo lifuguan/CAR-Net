@@ -81,7 +81,7 @@ class MetricsTable(object):
         self.result.print('avg_dice = %f' % (sum(self.dice_list) / self.len))
         self.result.print('avg_hd = %f' % (sum(self.hd_list) / self.len))
 
-        msg = [self.params.model, self.params.dataset, 40, 
+        msg = [self.params.model, self.params.loss, self.params.dataset, 40, 
             sum(self.accuracy_list) / self.len, 
             sum(self.precision_list) / self.len, 
             sum(self.sensitivity_list) / self.len,
