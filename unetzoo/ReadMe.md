@@ -1,4 +1,12 @@
-﻿UNet及其改进模型
+﻿<!--
+ * @Author: your name
+ * @Date: 2021-04-03 22:36:24
+ * @LastEditTime: 2021-04-24 16:19:11
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: /leo/unetzoo/ReadMe.md
+-->
+UNet及其改进模型
 合作者：李昊，陈浩然
 
 论文题目：
@@ -30,3 +38,4 @@ UNet，UNet++, R2UNet, AttenUNet, AttenR2UNet
 
 
 
+sudo chown -R pc001:pc001 leo/

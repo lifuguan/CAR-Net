@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-04-16 16:39:17
+LastEditTime: 2021-04-26 22:15:42
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/core/file.py
@@ -12,12 +12,12 @@ import numpy as np
 
 # 读取mask文件
 # https://github.com/Andy-zhujunwen/UNET-ZOO
-def read_mask(mask_name):
+def read_mask(mask_name, size):
     image_mask = cv2.imread(mask_name, 0)
     if np.all(image_mask == None):
         image_mask = imageio.mimread(mask_name)
         image_mask = np.array(image_mask)[0]
-    image_mask = cv2.resize(image_mask, (576, 576))
+    image_mask = cv2.resize(image_mask, (size, size))
     return image_mask
 
 # 创建二进制图像文件

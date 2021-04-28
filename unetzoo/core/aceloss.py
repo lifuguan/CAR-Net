@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-15 20:04:53
-LastEditTime: 2021-04-19 19:14:50
+LastEditTime: 2021-04-19 19:15:39
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/core/aceloss.py
@@ -84,7 +84,7 @@ def ACELoss(y_pred, y_true, u=1, a=1, b=1):
         cii, cjj, cij = second_derivative(input, ci, cj) # 二阶偏导
         beta = 1e-8
         length = torch.sqrt(beta + ci ** 2 + cj ** 2)
-        curvature = (beta + 1 + ci ** 2) * cjj + \                    
+        curvature = (beta + 1 + ci ** 2) * cjj + \
                     (beta + 1 + cj ** 2) * cii - 2 * ci * cj * cij     # 与论文不一样，缺少 +1
         curvature = torch.abs(curvature) / ((ci ** 2 + cj ** 2) ** 1.5 + 1 + beta) # 与论文不一样，缺少 +1
         elastica = torch.sum((a + b * (curvature ** 2)) * torch.abs(length))

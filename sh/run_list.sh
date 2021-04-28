@@ -1,8 +1,26 @@
+python unetzoo/main.py -m design_one  -d isbicell -l BCE -g 1
+python unetzoo/main.py -m design_one  -d liver -l ACELoss -g 1
+# python unetzoo/main.py -m design_one  -d dsb2018Cell -l BCE -g 1
+
+# python unetzoo/main.py -m design_one  -d COVID19 -l ACELoss -g 1
+# python unetzoo/main.py -m UNet  -d COVID19 -l ACELoss -g 1
+# python unetzoo/main.py -m Lite_RASPP  -d COVID19 -l ACELoss -g 1
+# python unetzoo/main.py -m unet++  -d COVID19 -l ACELoss -g 1
+# python unetzoo/main.py -m Attention_UNet  -d COVID19 -l ACELoss -g 1
+# python unetzoo/main.py -m cenet  -d COVID19 -l ACELoss -g 1
+
+# python unetzoo/main.py -m design_one  -d COVID19 -l BCE -g 1
+# python unetzoo/main.py -m UNet  -d COVID19 -l BCE -g 1
+# python unetzoo/main.py -m Lite_RASPP  -d COVID19 -l BCE -g 1
+# python unetzoo/main.py -m unet++  -d COVID19 -l BCE -g 1
+# python unetzoo/main.py -m Attention_UNet  -d COVID19 -l BCE -g 1
+# python unetzoo/main.py -m cenet  -d COVID19 -l BCE -g 1
+
 # python unetzoo/main.py -m Lite_RASPP        -d liver
-python unetzoo/main.py -m Lite_RASPP        -d isbicell
-python unetzoo/main.py -m Lite_RASPP        -d esophagus
-python unetzoo/main.py -m Lite_RASPP        -d driveEye
-python unetzoo/main.py -m Lite_RASPP        -d dsb2018Cell
+# python unetzoo/main.py -m Lite_RASPP        -d isbicell
+# python unetzoo/main.py -m Lite_RASPP        -d esophagus
+# python unetzoo/main.py -m Lite_RASPP        -d driveEye
+# python unetzoo/main.py -m Lite_RASPP        -d dsb2018Cell
 
 
 

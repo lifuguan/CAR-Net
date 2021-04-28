@@ -14,6 +14,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 from visdom import Visdom
 import torch
+import cv2
 
 from core.confusionmetrics import ConfusionMetrics
 from core.file import read_mask, binary_image
@@ -59,7 +60,7 @@ def train(device, params, train_dataloader, val_dataloader, model, criterion, op
                 else:
                     output = model(inputs)
                     if params.loss == "BCE":
-                        loss = criterion(output, labels) + ACELoss(output, labels)
+                        loss = criterion(output, labels) # + ACELoss(output, labels)
                     elif params.loss == "ACELoss":
                         loss = ACELoss(output, labels)
 
@@ -106,12 +107,18 @@ def val(device, params, model, best_iou, val_dataloader, result):
                 img_y = torch.squeeze(y).cpu().numpy()
                 img_x = torch.squeeze(x).cpu().permute(1,2,0).numpy()
 
-            # 图像二值化处理
-            mask_img= read_mask(mask[0])
-            image_mask = binary_image(mask_img, 30)  # check it 
-            img_y = binary_image(img_y, 0.5)
+            if params.dataset == "COVID19":
+                mask_img = np.load(mask[0])
+                mask_img = cv2.resize(mask_img, (576, 576))
+                image_mask = binary_image(mask_img, 1)  # check it 
+                img_y = binary_image(img_y, 0.2)
+            else:
+                # 图像二值化处理
+                mask_img= read_mask(mask[0], np.size(img_y,1))
+                image_mask = binary_image(mask_img, 30)  # check it 
+                img_y = binary_image(img_y, 0.5)
 
-            if i == 1:
+            if i == 5:
                 fig = plt.figure()
                 ax1 = fig.add_subplot(1, 3, 1)
                 ax1.set_title('Origin')
@@ -169,9 +176,16 @@ def test(device, params, test_dataloader, model, result):
             else:
                 predict = torch.squeeze(predict).cpu().numpy()
 
-            mask_img = read_mask(mask_path[0])
-            image_mask = binary_image(mask_img, 125)
-            predict = binary_image(predict, 0.5)
+            if params.dataset == "COVID19":
+                mask_img = np.load(mask_path[0])
+                mask_img = cv2.resize(mask_img, (576, 576))
+                image_mask = binary_image(mask_img, 1)  # check it 
+                img_y = binary_image(predict, 0.2)
+            else:
+                # 图像二值化处理
+                mask_img= read_mask(mask_path[0], np.size(predict,1))
+                image_mask = binary_image(mask_img, 30)  # check it 
+                image_mask = binary_image(image_mask, 0.5)
             # 计算度量值
             cma.genConfusionMatrix(predict.astype(np.int32), image_mask.astype(np.int32))
             accuracy = cma.accuracy()
@@ -189,21 +203,24 @@ def test(device, params, test_dataloader, model, result):
             fig = plt.figure()
             ax1 = fig.add_subplot(1, 3, 1)
             ax1.set_title('input')
-            plt.imshow(Image.open(pic_path[0]))
+
+            origin_img = np.load(pic_path[0]) if params.dataset == "COVID19" else Image.open(pic_path[0])
+            plt.imshow(origin_img)
             # print(pic_path[0])
             ax2 = fig.add_subplot(1, 3, 2)
             ax2.set_title('predict')
             plt.imshow(predict, cmap='Greys_r')
             ax3 = fig.add_subplot(1, 3, 3)
             ax3.set_title('mask')
-            plt.imshow(Image.open(mask_path[0]), cmap='Greys_r')
+            mask_img = np.load(mask_path[0]) if params.dataset == "COVID19" else Image.open(mask_path[0])
+            plt.imshow(mask_img, cmap='Greys_r')
 
             if params.dataset == 'driveEye':
                 saved_predict = result.test_dir + '/' + mask_path[0].split('/')[-1]
                 saved_predict = saved_predict.split('.')[0] + '.tif'
                 plt.savefig(saved_predict)
             else:
-                plt.savefig(result.test_dir + '/' + mask_path[0].split('/')[-1])
+                plt.savefig(result.test_dir + '/' + mask_path[0].split('/')[-1][:-4] + "jpg")
 
             result.print('accuracy = {}'.format(accuracy))
             result.print('precision = {}'.format(precision))

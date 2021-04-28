@@ -19,6 +19,7 @@ from utils.hyperparams import HyperParams
 class ExpResult():
     def __init__(self, params):
         self.model = params.model
+        self.loss = params.loss
         self.dataset = params.dataset
         self.epochs = params.epochs
         self.batch_size = params.batch_size
@@ -33,7 +34,7 @@ class ExpResult():
 
         # 实验目录
         timepath = time.strftime("%Y%m%d-%H%M%S", time.localtime())
-        self.exp_dir = os.path.join(self.base_dir, timepath + '-' + self.model + "-" + self.dataset)
+        self.exp_dir = os.path.join(self.base_dir, timepath + '-' + self.model + "-" + self.loss + "-" + self.dataset)
         if not os.path.exists(self.exp_dir):
             os.makedirs(self.exp_dir)
 
