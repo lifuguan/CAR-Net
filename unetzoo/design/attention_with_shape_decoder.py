@@ -30,7 +30,7 @@ class DoubleConv(nn.Module):
             nn.ReLU(inplace=True)
         )
     def forward(self, input):
-        return self.conv(input)
+        return self.conv(input) + input  # residual add
 
 class AttentionDesignOne(nn.Module):
     def __init__(self, in_ch, out_ch):

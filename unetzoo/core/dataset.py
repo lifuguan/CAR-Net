@@ -479,8 +479,8 @@ class Covid19Dataset(data.Dataset):
         self.target_transform = target_transform
 
     def getDataPath(self):
-        self.img_paths = glob(self.root + r'/train/img/*')
-        self.mask_paths = glob(self.root + r'/train/mask/*')
+        self.img_paths = glob(self.root + r'/img/*')
+        self.mask_paths = glob(self.root + r'/mask/*')
 
         # sklearn函数：分离训练和验证集
         self.train_img_paths, self.val_img_paths, self.train_mask_paths, self.val_mask_paths = \
@@ -497,13 +497,11 @@ class Covid19Dataset(data.Dataset):
     def __getitem__(self, index):
         pic_path = self.pics[index]
         mask_path = self.masks[index]
-        pic = np.load(pic_path)
+        pic = cv2.imread(pic_path)
         pic = cv2.resize(pic, (576, 576))
-        pic = np.expand_dims(pic, axis=2)
-        pic = np.concatenate((pic, pic, pic), axis=-1)
-        mask = np.load(mask_path)
+        mask = cv2.imread(mask_path)
         mask = cv2.resize(mask, (576, 576))
-        pic = pic.astype('float32') / 128
+        pic = pic.astype('float32') / 255
         mask = mask.astype('float32') / 255
         if self.transform is not None:
             img_x = self.transform(pic)
