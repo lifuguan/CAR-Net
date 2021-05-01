@@ -60,7 +60,9 @@ def train(device, params, train_dataloader, val_dataloader, model, criterion, op
                 else:
                     output = model(inputs)
                     if params.loss == "BCE":
-                        loss = criterion(output, labels) # + ACELoss(output, labels)
+                        loss = criterion(output, labels)
+                    elif params.loss == "hybrid":
+                        loss = criterion(output, labels) + params.theta * ACELoss(output, labels)
                     elif params.loss == "ACELoss":
                         loss = ACELoss(output, labels)
 
@@ -107,22 +109,16 @@ def val(device, params, model, best_iou, val_dataloader, result):
                 img_y = torch.squeeze(y).cpu().numpy()
                 img_x = torch.squeeze(x).cpu().permute(1,2,0).numpy()
 
-            if params.dataset == "COVID19":
-                mask_img = np.load(mask[0])
-                mask_img = cv2.resize(mask_img, (576, 576))
-                image_mask = binary_image(mask_img, 1)  # check it 
-                img_y = binary_image(img_y, 0.2)
-            else:
-                # 图像二值化处理
-                mask_img= read_mask(mask[0], np.size(img_y,1))
-                image_mask = binary_image(mask_img, 30)  # check it 
-                img_y = binary_image(img_y, 0.5)
+            # 图像二值化处理
+            mask_img= read_mask(mask[0], np.size(img_y,1))
+            image_mask = binary_image(mask_img, 30)  # check it 
+            img_y = binary_image(img_y, 0.5)
 
             if i == 5:
                 fig = plt.figure()
                 ax1 = fig.add_subplot(1, 3, 1)
                 ax1.set_title('Origin')
-                plt.imshow(img_x)
+                plt.imshow(img_x, cmap = 'bone')
                 ax2 = fig.add_subplot(1, 3, 2)
                 ax2.set_title('GT')
                 plt.imshow(image_mask)
@@ -176,16 +172,17 @@ def test(device, params, test_dataloader, model, result):
             else:
                 predict = torch.squeeze(predict).cpu().numpy()
 
-            if params.dataset == "COVID19":
-                mask_img = np.load(mask_path[0])
-                mask_img = cv2.resize(mask_img, (576, 576))
-                image_mask = binary_image(mask_img, 1)  # check it 
-                img_y = binary_image(predict, 0.2)
-            else:
-                # 图像二值化处理
-                mask_img= read_mask(mask_path[0], np.size(predict,1))
-                image_mask = binary_image(mask_img, 30)  # check it 
-                image_mask = binary_image(image_mask, 0.5)
+            # if params.dataset == "COVID19":
+            #     mask_img = cv2.imread(mask[0], cv2.COLOR_RGB2GRAY)
+            #     mask_img = cv2.resize(mask_img, (576, 576))
+            #     image_mask = binary_image(mask_img, 1)  # check it 
+            #     img_y = binary_image(predict, 0.2)
+            # else:
+
+            # 图像二值化处理
+            mask_img= read_mask(mask_path[0], np.size(predict,1))
+            image_mask = binary_image(mask_img, 30)  # check it 
+            image_mask = binary_image(image_mask, 0.5)
             # 计算度量值
             cma.genConfusionMatrix(predict.astype(np.int32), image_mask.astype(np.int32))
             accuracy = cma.accuracy()

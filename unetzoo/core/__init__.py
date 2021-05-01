@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-04-22 15:55:09
+LastEditTime: 2021-04-30 12:11:28
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/core/__init__.py
@@ -79,5 +79,10 @@ def getDataset(params, x_transforms, y_transforms):
         val_dataset = Covid19Dataset(r"val", transform=x_transforms, target_transform=y_transforms)
         val_dataloaders = DataLoader(val_dataset, batch_size=1)
         test_dataloaders = val_dataloaders
-        
+    if params.dataset == "lung":
+        train_dataset = LungDataset(r"train", transform=x_transforms, target_transform=y_transforms)
+        train_dataloaders = DataLoader(train_dataset, batch_size=params.batch_size)
+        val_dataset = LungDataset(r"val", transform=x_transforms, target_transform=y_transforms)
+        val_dataloaders = DataLoader(val_dataset, batch_size=1)
+        test_dataloaders = val_dataloaders
     return train_dataloaders, val_dataloaders, test_dataloaders

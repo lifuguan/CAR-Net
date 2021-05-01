@@ -499,8 +499,58 @@ class Covid19Dataset(data.Dataset):
         mask_path = self.masks[index]
         pic = cv2.imread(pic_path)
         pic = cv2.resize(pic, (576, 576))
-        mask = cv2.imread(mask_path)
+        mask = cv2.imread(mask_path,cv2.COLOR_BGR2GRAY)
         mask = cv2.resize(mask, (576, 576))
+        mask = np.expand_dims(mask, axis=2)
+        pic = pic.astype('float32') / 255
+        mask = mask.astype('float32') / 255
+        if self.transform is not None:
+            img_x = self.transform(pic)
+        if self.target_transform is not None:
+            img_y = self.target_transform(mask)
+        return img_x, img_y,pic_path,mask_path
+
+    def __len__(self):
+        return len(self.pics)
+
+
+class LungDataset(data.Dataset):
+    def __init__(self, state, transform=None, target_transform=None):
+        self.state = state
+        self.aug = True
+        self.root = r'dataset/lung'
+        self.img_paths = None
+        self.mask_paths = None
+        self.train_img_paths, self.val_img_paths,self.test_img_paths = None,None,None
+        self.train_mask_paths, self.val_mask_paths,self.test_mask_paths = None,None,None
+        self.pics,self.masks = self.getDataPath()
+        self.transform = transform
+        self.target_transform = target_transform
+
+    def getDataPath(self):
+        self.img_paths = glob(self.root + r'/img/*')
+        self.mask_paths = glob(self.root + r'/mask/*')
+
+        # sklearn函数：分离训练和验证集
+        self.train_img_paths, self.val_img_paths, self.train_mask_paths, self.val_mask_paths = \
+            train_test_split(self.img_paths, self.mask_paths, test_size=0.2, random_state=41)
+        self.test_img_paths, self.test_mask_paths = self.val_img_paths,self.val_mask_paths
+        assert self.state == 'train' or self.state == 'val' or self.state == 'test'
+        if self.state == 'train':
+            return self.train_img_paths,self.train_mask_paths
+        if self.state == 'val':
+            return self.val_img_paths,self.val_mask_paths
+        if self.state == 'test':
+            return self.test_img_paths,self.test_mask_paths
+
+    def __getitem__(self, index):
+        pic_path = self.pics[index]
+        mask_path = self.masks[index]
+        pic = cv2.imread(pic_path)
+        pic = cv2.resize(pic, (576, 576))
+        mask = cv2.imread(mask_path,cv2.COLOR_BGR2GRAY)
+        mask = cv2.resize(mask, (576, 576))
+        mask = np.expand_dims(mask, axis=2)
         pic = pic.astype('float32') / 255
         mask = mask.astype('float32') / 255
         if self.transform is not None:

@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-04-26 22:01:39
+LastEditTime: 2021-04-30 22:28:00
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/main.py
@@ -33,16 +33,17 @@ if __name__ == '__main__':
         # 载入参数
     parser = argparse.ArgumentParser(description='PyTorch Training')
     parser.add_argument('-g', '--gpu', type=str, choices=['0', '1'], default='1')
-    parser.add_argument('-m', '--model', type=str, default='UNet')
+    parser.add_argument('-m', '--model', type=str, default='design_one')
     parser.add_argument('-l', '--loss', type=str,
-                        choices=['BCE', 'ACELoss'], default='BCE')
+                        choices=['BCE', 'ACELoss', 'hybrid'], default='hybrid')
     parser.add_argument('-d', '--dataset', type=str,
-                        choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye', 'esophagus', 'corneal', 'racecar', 'COVID19'], default='COVID19')
+                        choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye',
+                         'esophagus', 'corneal', 'racecar', 'COVID19', 'lung'], default='lung')
     parser.add_argument('--ngpu', default=2, type=int, metavar='G',
                         help='number of gpus to use')
     parser.add_argument('-j', '--workers', default=8, type=int, metavar='N',
                         help='number of data loading workers (default: 2)')
-    parser.add_argument('--epochs', default=40, type=int, metavar='N',
+    parser.add_argument('--epochs', default=20, type=int, metavar='N',
                         help='number of total epochs to run')
     parser.add_argument('-b', '--batch-size', default=2, type=int,
                         metavar='N', help='mini-batch size (default: 2)')
@@ -50,6 +51,7 @@ if __name__ == '__main__':
     parser.add_argument('--action', default='train&test', type=str)
     parser.add_argument('--savedir', default='result/unetzoo', type=str)
     parser.add_argument('--deepsupervision', default=0, type=int)
+    parser.add_argument('--theta', default=0.0005, type=float)
     params = parser.parse_args()
     print("model : {}".format(params.model))
     if params.threshold == "None":
