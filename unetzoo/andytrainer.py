@@ -12,7 +12,6 @@ from tqdm import tqdm
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-from visdom import Visdom
 import torch
 import cv2
 
@@ -27,7 +26,7 @@ from core.aceloss import ACELoss
 from core.metricstable import MetricsTable
 
 
-def train(device, params, train_dataloader, val_dataloader, model, criterion, optimizer, result):
+def train(device, params, train_dataloader, val_dataloader, model, criterion, optimizer, result, vis):
     result.print('train start......')
     best_iou, aver_iou, aver_dice, aver_hd = 0, 0, 0, 0
     num_epochs = params.epochs
@@ -81,19 +80,19 @@ def train(device, params, train_dataloader, val_dataloader, model, criterion, op
 
         loss_list.append(epoch_loss)
         best_iou, (avg_accuracy, avg_precision, avg_sensitivity, avg_specificity, avg_f1score, avg_meanIoU, avg_fwIoU, avg_iou, \
-        avg_dice, avg_hd) = val(device, params, model, best_iou, val_dataloader, result)
+        avg_dice, avg_hd) = val(device, params, model, best_iou, val_dataloader, result, vis)
         epoch_metrics.addmetric(avg_accuracy, avg_precision, avg_sensitivity, avg_specificity, avg_f1score, \
                                 avg_meanIoU, avg_fwIoU, avg_iou, avg_dice, avg_hd)
         result.print("epoch %d loss: %0.3f" % (epoch, epoch_loss))
+        vis.plot_many_stack({'iou':avg_iou, 'dice':avg_dice, 'f1_score':avg_f1score})
     result.savelosses('loss', loss_list)
     epoch_metrics.savemetrics('train')
     return model
 
 
 # validation
-def val(device, params, model, best_iou, val_dataloader, result):
+def val(device, params, model, best_iou, val_dataloader, result, vis):
     model = model.eval()
-    viz = Visdom(env='main')
     with torch.no_grad():
         i = 0  # 验证集中第i张图
         cma = ConfusionMetrics(2)
@@ -121,12 +120,14 @@ def val(device, params, model, best_iou, val_dataloader, result):
                 plt.imshow(img_x, cmap = 'bone')
                 ax2 = fig.add_subplot(1, 3, 2)
                 ax2.set_title('GT')
-                plt.imshow(image_mask)
+                plt.imshow(img_x, cmap = 'bone')
+                plt.imshow(image_mask, alpha = 0.5, cmap = 'nipy_spectral')
                 ax3 = fig.add_subplot(1, 3, 3)
                 ax3.set_title('Predict')
-                plt.imshow(img_y)
-                assert viz.check_connection()
-                viz.matplot(plt)
+                plt.imshow(img_x, cmap = 'bone')
+                plt.imshow(img_y, alpha = 0.5, cmap = 'nipy_spectral')
+                assert vis.vis.check_connection()
+                vis.vis.matplot(plt)
                 
                 plt.close()
             # 计算度量值
@@ -172,13 +173,6 @@ def test(device, params, test_dataloader, model, result):
             else:
                 predict = torch.squeeze(predict).cpu().numpy()
 
-            # if params.dataset == "COVID19":
-            #     mask_img = cv2.imread(mask[0], cv2.COLOR_RGB2GRAY)
-            #     mask_img = cv2.resize(mask_img, (576, 576))
-            #     image_mask = binary_image(mask_img, 1)  # check it 
-            #     img_y = binary_image(predict, 0.2)
-            # else:
-
             # 图像二值化处理
             mask_img= read_mask(mask_path[0], np.size(predict,1))
             image_mask = binary_image(mask_img, 30)  # check it 
@@ -200,16 +194,14 @@ def test(device, params, test_dataloader, model, result):
             fig = plt.figure()
             ax1 = fig.add_subplot(1, 3, 1)
             ax1.set_title('input')
-
-            origin_img = np.load(pic_path[0]) if params.dataset == "COVID19" else Image.open(pic_path[0])
+            origin_img = Image.open(pic_path[0])
             plt.imshow(origin_img)
-            # print(pic_path[0])
             ax2 = fig.add_subplot(1, 3, 2)
             ax2.set_title('predict')
             plt.imshow(predict, cmap='Greys_r')
             ax3 = fig.add_subplot(1, 3, 3)
             ax3.set_title('mask')
-            mask_img = np.load(mask_path[0]) if params.dataset == "COVID19" else Image.open(mask_path[0])
+            mask_img = Image.open(mask_path[0])
             plt.imshow(mask_img, cmap='Greys_r')
 
             if params.dataset == 'driveEye':

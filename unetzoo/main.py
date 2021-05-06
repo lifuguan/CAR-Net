@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-04-30 22:28:00
+LastEditTime: 2021-05-06 13:00:54
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/main.py
@@ -28,6 +28,8 @@ from utils.hyperparams import HyperParams
 from andytrainer import train
 from andytrainer import test
 
+# visdom visualizer
+from utils.visual_metric import Visualizer
 
 if __name__ == '__main__':
         # 载入参数
@@ -38,12 +40,12 @@ if __name__ == '__main__':
                         choices=['BCE', 'ACELoss', 'hybrid'], default='hybrid')
     parser.add_argument('-d', '--dataset', type=str,
                         choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye',
-                         'esophagus', 'corneal', 'racecar', 'COVID19', 'lung'], default='lung')
+                         'esophagus', 'corneal', 'racecar', 'COVID19', 'lung'], default='liver')
     parser.add_argument('--ngpu', default=2, type=int, metavar='G',
                         help='number of gpus to use')
     parser.add_argument('-j', '--workers', default=8, type=int, metavar='N',
                         help='number of data loading workers (default: 2)')
-    parser.add_argument('--epochs', default=20, type=int, metavar='N',
+    parser.add_argument('--epochs', default=40, type=int, metavar='N',
                         help='number of total epochs to run')
     parser.add_argument('-b', '--batch-size', default=2, type=int,
                         metavar='N', help='mini-batch size (default: 2)')
@@ -84,8 +86,10 @@ if __name__ == '__main__':
     criterion = torch.nn.BCELoss()    # 损失函数
     optimizer = optim.Adam(model.parameters())
 
+    
+    vis = Visualizer(env='{}'.format(params.model + '-' + params.dataset))
     if 'train' in params.action:
         train(device, params, train_dataloader, val_dataloader,
-              model, criterion, optimizer, result)
+              model, criterion, optimizer, result, vis)
     if 'test' in params.action:
-        test(device, params, test_dataloader, model, result)
+        test(device, params, test_dataloader, model, result, vis)
