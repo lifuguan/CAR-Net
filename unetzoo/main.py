@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-05-06 13:00:54
+LastEditTime: 2021-05-07 10:11:20
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/main.py
@@ -31,11 +31,13 @@ from andytrainer import test
 # visdom visualizer
 from utils.visual_metric import Visualizer
 
+from core.loss_fn import DiceLoss
+
 if __name__ == '__main__':
         # 载入参数
     parser = argparse.ArgumentParser(description='PyTorch Training')
-    parser.add_argument('-g', '--gpu', type=str, choices=['0', '1'], default='1')
-    parser.add_argument('-m', '--model', type=str, default='design_one')
+    parser.add_argument('-g', '--gpu', type=str, choices=['0', '1'], default='0')
+    parser.add_argument('-m', '--model', type=str, default='UNet')
     parser.add_argument('-l', '--loss', type=str,
                         choices=['BCE', 'ACELoss', 'hybrid'], default='hybrid')
     parser.add_argument('-d', '--dataset', type=str,
@@ -84,12 +86,13 @@ if __name__ == '__main__':
     train_dataloader, val_dataloader, test_dataloader = getDataset(
         params, x_transforms, y_transforms)
     criterion = torch.nn.BCELoss()    # 损失函数
+    dice_loss = DiceLoss()
     optimizer = optim.Adam(model.parameters())
 
     
     vis = Visualizer(env='{}'.format(params.model + '-' + params.dataset))
     if 'train' in params.action:
         train(device, params, train_dataloader, val_dataloader,
-              model, criterion, optimizer, result, vis)
+              model, criterion, dice_loss, optimizer, result, vis)
     if 'test' in params.action:
         test(device, params, test_dataloader, model, result, vis)

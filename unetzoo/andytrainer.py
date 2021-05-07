@@ -20,13 +20,13 @@ from core.file import read_mask, binary_image
 from core.segmetrics import get_dice, get_iou, get_hd
 
 # active contour loss function
-from core.aceloss import ACELoss
+from core.loss_fn import ACELoss
 
 # training function
 from core.metricstable import MetricsTable
 
 
-def train(device, params, train_dataloader, val_dataloader, model, criterion, optimizer, result, vis):
+def train(device, params, train_dataloader, val_dataloader, model, criterion, dice_loss, optimizer, result, vis):
     result.print('train start......')
     best_iou, aver_iou, aver_dice, aver_hd = 0, 0, 0, 0
     num_epochs = params.epochs
@@ -61,7 +61,7 @@ def train(device, params, train_dataloader, val_dataloader, model, criterion, op
                     if params.loss == "BCE":
                         loss = criterion(output, labels)
                     elif params.loss == "hybrid":
-                        loss = criterion(output, labels) + params.theta * ACELoss(output, labels)
+                        loss = 0.5 * criterion(output, labels) + params.theta * ACELoss(output, labels) +0.5 * dice_loss(output, labels)
                     elif params.loss == "ACELoss":
                         loss = ACELoss(output, labels)
 
@@ -80,18 +80,19 @@ def train(device, params, train_dataloader, val_dataloader, model, criterion, op
 
         loss_list.append(epoch_loss)
         best_iou, (avg_accuracy, avg_precision, avg_sensitivity, avg_specificity, avg_f1score, avg_meanIoU, avg_fwIoU, avg_iou, \
-        avg_dice, avg_hd) = val(device, params, model, best_iou, val_dataloader, result, vis)
+        avg_dice, avg_hd) = val(device, params, model, best_iou, val_dataloader, result, vis, epoch)
         epoch_metrics.addmetric(avg_accuracy, avg_precision, avg_sensitivity, avg_specificity, avg_f1score, \
                                 avg_meanIoU, avg_fwIoU, avg_iou, avg_dice, avg_hd)
         result.print("epoch %d loss: %0.3f" % (epoch, epoch_loss))
-        vis.plot_many_stack({'iou':avg_iou, 'dice':avg_dice, 'f1_score':avg_f1score})
+        vis.plot_many_stack({'sensitivity':avg_sensitivity,'iou':avg_iou, 'dice':avg_dice, 'f1_score':avg_f1score})
+        vis.plot_many_stack({'hd':avg_hd})
     result.savelosses('loss', loss_list)
     epoch_metrics.savemetrics('train')
     return model
 
 
 # validation
-def val(device, params, model, best_iou, val_dataloader, result, vis):
+def val(device, params, model, best_iou, val_dataloader, result, vis, epoch):
     model = model.eval()
     with torch.no_grad():
         i = 0  # 验证集中第i张图
@@ -127,8 +128,9 @@ def val(device, params, model, best_iou, val_dataloader, result, vis):
                 plt.imshow(img_x, cmap = 'bone')
                 plt.imshow(img_y, alpha = 0.5, cmap = 'nipy_spectral')
                 assert vis.vis.check_connection()
-                vis.vis.matplot(plt)
-                
+                vis.vis.matplot(plt, 
+                    opts=dict(legend=str(epoch), title=str(epoch))
+                    )
                 plt.close()
             # 计算度量值
             cma.genConfusionMatrix(img_y.astype(np.int32), image_mask.astype(np.int32))
@@ -156,7 +158,7 @@ def val(device, params, model, best_iou, val_dataloader, result, vis):
 
 
 # test
-def test(device, params, test_dataloader, model, result):
+def test(device, params, test_dataloader, model, result, vis):
     print('test start......')
     model = result.loadmodel(model)
     model.eval()
@@ -172,7 +174,8 @@ def test(device, params, test_dataloader, model, result):
                 predict = torch.squeeze(predict[-1]).cpu().numpy()
             else:
                 predict = torch.squeeze(predict).cpu().numpy()
-
+            _,predict = cv2.threshold(predict, 0.1, 1, cv2.THRESH_BINARY)
+            
             # 图像二值化处理
             mask_img= read_mask(mask_path[0], np.size(predict,1))
             image_mask = binary_image(mask_img, 30)  # check it 
