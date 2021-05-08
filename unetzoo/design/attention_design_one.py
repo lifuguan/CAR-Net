@@ -19,19 +19,19 @@ import os
 __all__ = ["desgin_one"]
 
 
-class DoubleConv(nn.Module):
+class EncoderConv(nn.Module):
     def __init__(self, in_ch, out_ch):
-        super(DoubleConv, self).__init__()
+        super(EncoderConv, self).__init__()
         self.conv1 = nn.Conv2d(in_ch, out_ch, 3, padding=1)
         self.conv2 = nn.Sequential(
             nn.Conv2d(out_ch, out_ch, 3, padding=1),
             nn.BatchNorm2d(out_ch),
-            nn.ReLU(inplace=True),
+            nn.Hardswish(),
             nn.Conv2d(out_ch, out_ch, 3, padding=1),
             nn.BatchNorm2d(out_ch),
-            nn.ReLU(inplace=True)
+            nn.Hardswish()
         )
-        self.norm = nn.BatchNorm2d(in_channels)
+        self.norm = nn.BatchNorm2d(out_ch)
     def forward(self, input):
         x1 = self.conv1(input)
         identity = x1
@@ -47,10 +47,10 @@ class DoubleConv(nn.Module):
         self.conv = nn.Sequential(
             nn.Conv2d(in_ch, out_ch, 3, padding=1),
             nn.BatchNorm2d(out_ch),
-            nn.ReLU(inplace=True),
+            nn.Hardswish(),
             nn.Conv2d(out_ch, out_ch, 3, padding=1),
             nn.BatchNorm2d(out_ch),
-            nn.ReLU(inplace=True)
+            nn.Hardswish()
         )
     def forward(self, input):
         return self.conv(input)
@@ -58,15 +58,15 @@ class DoubleConv(nn.Module):
 class AttentionDesignOne(nn.Module):
     def __init__(self, in_ch, out_ch):
         super(AttentionDesignOne, self).__init__()
-        self.conv1 = DoubleConv(in_ch, 64)
+        self.conv1 = EncoderConv(in_ch, 64)
         self.pool1 = nn.MaxPool2d(2)
-        self.conv2 = DoubleConv(64, 128)
+        self.conv2 = EncoderConv(64, 128)
         self.pool2 = nn.MaxPool2d(2)
-        self.conv3 = DoubleConv(128, 256)
+        self.conv3 = EncoderConv(128, 256)
         self.pool3 = nn.MaxPool2d(2)
-        self.conv4 = DoubleConv(256, 512)
+        self.conv4 = EncoderConv(256, 512)
         self.pool4 = nn.MaxPool2d(2)
-        self.conv5 = DoubleConv(512, 1024)
+        self.conv5 = EncoderConv(512, 1024)
         self.bottleneck = ASPP(1024, 1024)
 
         self.up6 = nn.ConvTranspose2d(1024, 512, 2, stride=2)
@@ -114,77 +114,6 @@ class AttentionDesignOne(nn.Module):
         out = nn.Sigmoid()(c10)
         return out
 
-# class AttentionDesignOne(nn.Module):
-#     def __init__(self, num_classes=1, num_channels=3, pretrained=True):
-#         super(AttentionDesignOne, self).__init__()
-
-#         filters = [64, 128, 256, 512]
-#         resnet = models.resnet34(pretrained=pretrained)
-#         self.firstconv = resnet.conv1
-#         self.firstbn = resnet.bn1
-#         self.firstrelu = resnet.relu
-#         self.firstmaxpool = resnet.maxpool
-#         self.encoder1 = resnet.layer1
-#         self.encoder2 = resnet.layer2
-#         self.encoder3 = resnet.layer3
-#         self.encoder4 = resnet.layer4
-#         self.pool5 = nn.MaxPool2d(2)
-#         self.encoder5 = DoubleConv(512, 1024)
-
-#         self.bottleneck = ASPP(1024, 1024)
-
-#         self.decoder4 = DecoderBlock(512, filters[2])
-#         self.decoder3 = DecoderBlock(filters[2], filters[1])
-#         self.decoder2 = DecoderBlock(filters[1], filters[0])
-#         self.decoder1 = DecoderBlock(filters[0], filters[0])
-
-#         self.finaldeconv1 = nn.ConvTranspose2d(filters[0], 32, 4, 2, 1)
-#         self.finalrelu1 = nonlinearity
-#         self.finalconv2 = nn.Conv2d(32, 32, 3, padding=1)
-#         self.finalrelu2 = nonlinearity
-#         self.finalconv3 = nn.Conv2d(32, num_classes, 3, padding=1)
-
-#         self.attention1 = AttentionBlock(64, 64)
-#         self.attention2 = AttentionBlock(128, 128)
-#         self.attention3 = AttentionBlock(256, 256)
-#         self.attention4 = AttentionBlock(512, 512)
-
-#     def forward(self, x):
-#         # Encoder
-#         x = self.firstconv(x)
-#         x = self.firstbn(x)
-#         x = self.firstrelu(x)
-#         x = self.firstmaxpool(x)
-#         e1 = self.encoder1(x)
-#         e2 = self.encoder2(e1)
-#         e3 = self.encoder3(e2)
-#         e4 = self.encoder4(e3)
-#         e5 = self.encoder5(self.pool5(e4))
-
-#         # Bottle neck
-#         bottle = self.bottleneck(e5)
-
-#         # Decoder
-#         merge1 = self.attention4(e4, bottle)
-#         d4 = self.decoder4(bottle) + merge1
-
-#         merge2 = self.attention3(e3, d4)
-#         d3 = self.decoder3(d4) + merge2
-        
-#         merge3 = self.attention2(e2, d3)
-#         d2 = self.decoder2(d3) + merge3
-
-#         merge4 = self.attention1(e1, d2)
-#         d1 = self.decoder1(d2) + merge4
-
-#         out = self.finaldeconv1(d1)
-#         out = self.finalrelu1(out)
-#         out = self.finalconv2(out)
-#         out = self.finalrelu2(out)
-#         out = self.finalconv3(out)
-
-#         return nn.Sigmoid()(out)
-
 class ASPP(nn.Module):
     def __init__(self, in_channel=1024, depth=1024):
         super(ASPP,self).__init__()
@@ -212,7 +141,7 @@ class ASPP(nn.Module):
                                               atrous_block12, atrous_block18], dim=1))
 
         return net
-
+     
 nonlinearity = partial(F.relu, inplace=True)
 class DecoderBlock(nn.Module):
     def __init__(self, in_channels, n_filters):
@@ -282,7 +211,7 @@ class ChannelGate(nn.Module):
         self.mlp = nn.Sequential(
             Flatten(),
             nn.Linear(in_channels, in_channels // reduction_ratio),
-            nn.ReLU(),
+            nn.Hardswish(),
             nn.Linear(in_channels // reduction_ratio, in_channels)
         )
         self.pool_types = pool_types
@@ -314,7 +243,7 @@ class BasicConv(nn.Module):
         self.out_channels = out_planes
         self.conv = nn.Conv2d(in_planes, out_planes, kernel_size=kernel_size, stride=stride, padding=padding, dilation=dilation, groups=groups, bias=bias)
         self.bn = nn.BatchNorm2d(out_planes,eps=1e-5, momentum=0.01, affine=True) if bn else None
-        self.relu = nn.ReLU() if relu else None
+        self.relu = nn.Hardswish() if relu else None
 
     def forward(self, x):
         x = self.conv(x)
@@ -340,7 +269,7 @@ class SpatialGate(nn.Module):
 
 """print layers and params of network"""
 if __name__ == '__main__':
-    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = AttentionDesignOne(3, 1).to(device)
     # model = AttentionBlock(64, 64).to(device=device)

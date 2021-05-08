@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-09 18:18:40
-LastEditTime: 2021-05-07 11:26:24
+LastEditTime: 2021-05-08 19:41:22
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/test.py
@@ -40,7 +40,7 @@ if __name__ == '__main__':
         # 载入参数
     parser = argparse.ArgumentParser(description='PyTorch Training')
     parser.add_argument('-g', '--gpu', type=str, choices=['0', '1'], default='0')
-    parser.add_argument('-m', '--model', type=str, default='UNet')
+    parser.add_argument('-m', '--model', type=str, default='design_one')
     parser.add_argument('-l', '--loss', type=str,
                         choices=['BCE', 'ACELoss', 'hybrid'], default='hybrid')
     parser.add_argument('-d', '--dataset', type=str,
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     # 实验结果记录
     result = ExpResult(params)
     result.expinfo()
-    shutil.copy('result/unetzoo/20210507-101623-UNet-BCE-liver/train/UNet-liver-40-2.pth', result.exp_dir + '/train')
+    shutil.copy('result/unetzoo/20210508-191025-design_one-hybrid-liver/train/design_one-liver-40-2.pth', result.exp_dir + '/train')
 
     os.environ['CUDA_VISIBLE_DEVICES'] = params.gpu
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

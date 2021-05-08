@@ -176,6 +176,6 @@ class resnet34_unet(nn.Module):
 if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = '1'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = UNet(3, 1).to(device)
+    model = resnet34_unet(3, 1).to(device)
     print(model)
-    summary(model,(3,128,128))    #Succeed!
+    summary(model,(3,512,512))    #Succeed!

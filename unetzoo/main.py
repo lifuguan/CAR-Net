@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-05-07 10:11:20
+LastEditTime: 2021-05-08 20:57:11
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/main.py
@@ -37,7 +37,7 @@ if __name__ == '__main__':
         # 载入参数
     parser = argparse.ArgumentParser(description='PyTorch Training')
     parser.add_argument('-g', '--gpu', type=str, choices=['0', '1'], default='0')
-    parser.add_argument('-m', '--model', type=str, default='UNet')
+    parser.add_argument('-m', '--model', type=str, default='design_two')
     parser.add_argument('-l', '--loss', type=str,
                         choices=['BCE', 'ACELoss', 'hybrid'], default='hybrid')
     parser.add_argument('-d', '--dataset', type=str,
