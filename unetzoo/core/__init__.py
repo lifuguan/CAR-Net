@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-04-30 12:11:28
+LastEditTime: 2021-05-08 19:00:53
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/core/__init__.py
@@ -26,7 +26,8 @@ def getDataset(params, x_transforms, y_transforms):
         train_dataloaders = DataLoader(train_dataset, batch_size=params.batch_size)
         val_dataset = LiverDataset(r"val", transform=x_transforms, target_transform=y_transforms)
         val_dataloaders = DataLoader(val_dataset, batch_size=1)
-        test_dataloaders = val_dataloaders
+        test_dataset = LiverDataset(r"test", transform=x_transforms, target_transform=y_transforms)
+        test_dataloaders = DataLoader(test_dataset, batch_size=1)
     if params.dataset == "esophagus":
         train_dataset = EsophagusDataset(r"train", transform=x_transforms, target_transform=y_transforms)
         train_dataloaders = DataLoader(train_dataset, batch_size=params.batch_size)

@@ -1,29 +1,35 @@
-python unetzoo/main.py -m design_one  -d liver -l hybrid -g 1 --theta 0.0005
-python unetzoo/main.py -m design_one  -d liver -l BCE -g 1 --theta 0.0005
+python unetzoo/main.py -m unet++ -d liver  -l BCE -g 1 --theta 0.005
+python unetzoo/main.py -m Attention_UNet -d liver -l BCE -g 1 --theta 0.005
+python unetzoo/main.py -m fcn32s -d liver -l BCE -g 1 --theta 0.005
+python unetzoo/main.py -m cenet -d liver -l BCE -g 1 --theta 0.005
 
-python unetzoo/main.py -m design_one  -d lung -l hybrid -g 1 --theta 0.0005
-python unetzoo/main.py -m design_one  -d lung -l BCE -g 1 --theta 0.0005
+# python unetzoo/main.py -m design_one  -d liver -l hybrid -g 1 --theta 0.005
+# python unetzoo/main.py -m design_one  -d liver -l BCE -g 1 --theta 0.005
 
-python unetzoo/main.py -m design_one  -d isbicell -l hybrid -g 1 --theta 0.0005
-python unetzoo/main.py -m design_one  -d isbicell -l BCE -g 1 --theta 0.0005
+# python unetzoo/main.py -m UNet  -d lung -l BCE -g 1 --theta 0.0005
+# python unetzoo/main.py -m unet++  -d lung -l BCE -g 1 --theta 0.0005
+# python unetzoo/main.py -m Attention_UNet  -d lung -l BCE -g 1 --theta 0.0005
+# python unetzoo/main.py -m cenet  -d lung -l BCE -g 1 --theta 0.0005
+# python unetzoo/main.py -m fcn32s  -d lung -l BCE -g 1 --theta 0.0005
+# python unetzoo/main.py -m design_one  -d lung -l hybrid -g 1 --theta 0.0005
+# python unetzoo/main.py -m design_one  -d lung -l BCE -g 1 --theta 0.0005
 
-python unetzoo/main.py -m design_one  -d dsb2018Cell -l hybrid -g 1 --theta 0.0005
-python unetzoo/main.py -m design_one  -d dsb2018Cell -l BCE -g 1 --theta 0.0005
+# python unetzoo/main.py -m design_one  -d driveEye -l hybrid -g 1 --theta 0.0005
+# python unetzoo/main.py -m design_one  -d driveEye -l BCE -g 1 --theta 0.0005
 
-python unetzoo/main.py -m design_one  -d driveEye -l hybrid -g 1 --theta 0.0005
-python unetzoo/main.py -m design_one  -d driveEye -l BCE -g 1 --theta 0.0005
 
-python unetzoo/main.py -m UNet  -d lung -l hybrid -g 1 --theta 0.0005
-python unetzoo/main.py -m unet++  -d lung -l hybrid -g 1 --theta 0.0005
-python unetzoo/main.py -m Attention_UNet  -d lung -l hybrid -g 1 --theta 0.0005
-python unetzoo/main.py -m cenet  -d lung -l hybrid -g 1 --theta 0.0005
-python unetzoo/main.py -m fcn32s  -d lung -l hybrid -g 1 --theta 0.0005
 
-python unetzoo/main.py -m UNet  -d lung -l BCE -g 1 --theta 0.0005
-python unetzoo/main.py -m unet++  -d lung -l BCE -g 1 --theta 0.0005
-python unetzoo/main.py -m Attention_UNet  -d lung -l BCE -g 1 --theta 0.0005
-python unetzoo/main.py -m cenet  -d lung -l BCE -g 1 --theta 0.0005
-python unetzoo/main.py -m fcn32s  -d lung -l BCE -g 1 --theta 0.0005
+# python unetzoo/main.py -m design_one  -d isbicell -l hybrid -g 1 --theta 0.005
+# python unetzoo/main.py -m design_one  -d isbicell -l BCE -g 1 --theta 0.005
+
+# python unetzoo/main.py -m design_one  -d dsb2018Cell -l hybrid -g 1 --theta 0.005
+# python unetzoo/main.py -m design_one  -d dsb2018Cell -l BCE -g 1 --theta 0.005
+
+# python unetzoo/main.py -m UNet  -d lung -l hybrid -g 1 --theta 0.0005
+# python unetzoo/main.py -m unet++  -d lung -l hybrid -g 1 --theta 0.0005
+# python unetzoo/main.py -m Attention_UNet  -d lung -l hybrid -g 1 --theta 0.0005
+# python unetzoo/main.py -m cenet  -d lung -l hybrid -g 1 --theta 0.0005
+# python unetzoo/main.py -m fcn32s  -d lung -l hybrid -g 1 --theta 0.0005
 
 # python unetzoo/main.py -m design_one  -d isbicell -l BCE -g 1 --theta 0.0005
 # python unetzoo/main.py -m design_one  -d dsb2018Cell -l BCE -g 1 --theta 0.0005
@@ -112,17 +118,7 @@ python unetzoo/main.py -m fcn32s  -d lung -l BCE -g 1 --theta 0.0005
 # python unetzoo/main.py -m smaatunet -d dsb2018Cell
 # python unetzoo/main.py -m self_attention_unet -d dsb2018Cell
 
-# python unetzoo/main.py -m UNet        -d liver
-# python unetzoo/main.py -m resnet34_unet  -d liver
-# python unetzoo/main.py -m unet++ -d liver
-# python unetzoo/main.py -m Attention_UNet -d liver
-# python unetzoo/main.py -m segnet -d liver
-# python unetzoo/main.py -m r2unet -d liver
-# python unetzoo/main.py -m fcn32s -d liver
-# python unetzoo/main.py -m myChannelUnet -d liver
-# python unetzoo/main.py -m cenet -d liver
-# python unetzoo/main.py -m smaatunet -d liver
-# python unetzoo/main.py -m self_attention_unet -d liver
+
 
 # python unetzoo/main.py -m UNet        -d isbicell
 # python unetzoo/main.py -m resnet34_unet  -d isbicell

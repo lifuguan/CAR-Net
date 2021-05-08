@@ -1,0 +1,484 @@
+/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/visdom/server.py:39: DeprecationWarning: zmq.eventloop.ioloop is deprecated in pyzmq 17. pyzmq now works with default tornado and asyncio eventloops.
+  ioloop.install()  # Needs to happen before any tornado imports!
+Traceback (most recent call last):
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/visdom/server.py", line 1922, in <module>
+    download_scripts_and_run()
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/visdom/server.py", line 1918, in download_scripts_and_run
+    main()
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/visdom/server.py", line 1910, in main
+    start_server(port=FLAGS.port, hostname=FLAGS.hostname, base_url=base_url,
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/visdom/server.py", line 1791, in start_server
+    app.listen(port, max_buffer_size=1024 ** 3)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/tornado/web.py", line 2109, in listen
+    server.listen(port, address)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/tornado/tcpserver.py", line 151, in listen
+    sockets = bind_sockets(port, address=address)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/tornado/netutil.py", line 161, in bind_sockets
+    sock.bind(sockaddr)
+OSError: [Errno 98] Address already in use
+Checking for scripts.
+It's Alive!
+  0%|          | 0/853 [00:00<?, ?it/s]  0%|          | 0/853 [00:00<?, ?it/s]
+model : design_one
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 87, in forward
+    c1 = self.conv1(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 56, in forward
+    return self.conv(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 419, in _conv_forward
+    return F.conv2d(input, weight, self.bias, self.stride,
+RuntimeError: CUDA out of memory. Tried to allocate 162.00 MiB (GPU 0; 10.76 GiB total capacity; 299.83 MiB already allocated; 57.38 MiB free; 306.00 MiB reserved in total by PyTorch)
+  0%|          | 0/853 [00:00<?, ?it/s]  0%|          | 0/853 [00:00<?, ?it/s]
+model : design_one
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 87, in forward
+    c1 = self.conv1(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 56, in forward
+    return self.conv(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 419, in _conv_forward
+    return F.conv2d(input, weight, self.bias, self.stride,
+RuntimeError: CUDA out of memory. Tried to allocate 162.00 MiB (GPU 0; 10.76 GiB total capacity; 299.83 MiB already allocated; 57.38 MiB free; 306.00 MiB reserved in total by PyTorch)
+  0%|          | 0/12 [00:00<?, ?it/s]  0%|          | 0/12 [00:00<?, ?it/s]
+model : design_one
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 87, in forward
+    c1 = self.conv1(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 56, in forward
+    return self.conv(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 419, in _conv_forward
+    return F.conv2d(input, weight, self.bias, self.stride,
+RuntimeError: CUDA out of memory. Tried to allocate 128.00 MiB (GPU 0; 10.76 GiB total capacity; 298.23 MiB already allocated; 57.38 MiB free; 306.00 MiB reserved in total by PyTorch)
+  0%|          | 0/12 [00:00<?, ?it/s]  0%|          | 0/12 [00:00<?, ?it/s]
+model : design_one
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 87, in forward
+    c1 = self.conv1(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 56, in forward
+    return self.conv(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 419, in _conv_forward
+    return F.conv2d(input, weight, self.bias, self.stride,
+RuntimeError: CUDA out of memory. Tried to allocate 128.00 MiB (GPU 0; 10.76 GiB total capacity; 298.23 MiB already allocated; 57.38 MiB free; 306.00 MiB reserved in total by PyTorch)
+  0%|          | 0/268 [00:00<?, ?it/s]  0%|          | 0/268 [00:00<?, ?it/s]
+model : design_one
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 87, in forward
+    c1 = self.conv1(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 56, in forward
+    return self.conv(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 419, in _conv_forward
+    return F.conv2d(input, weight, self.bias, self.stride,
+RuntimeError: cuDNN error: CUDNN_STATUS_NOT_INITIALIZED
+  0%|          | 0/268 [00:00<?, ?it/s]  0%|          | 0/268 [00:00<?, ?it/s]
+model : design_one
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 87, in forward
+    c1 = self.conv1(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 56, in forward
+    return self.conv(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 419, in _conv_forward
+    return F.conv2d(input, weight, self.bias, self.stride,
+RuntimeError: cuDNN error: CUDNN_STATUS_NOT_INITIALIZED
+  0%|          | 0/10 [00:00<?, ?it/s]  0%|          | 0/10 [00:02<?, ?it/s]
+model : design_one
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 87, in forward
+    c1 = self.conv1(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 56, in forward
+    return self.conv(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 419, in _conv_forward
+    return F.conv2d(input, weight, self.bias, self.stride,
+RuntimeError: CUDA out of memory. Tried to allocate 162.00 MiB (GPU 0; 10.76 GiB total capacity; 299.83 MiB already allocated; 57.38 MiB free; 306.00 MiB reserved in total by PyTorch)
+  0%|          | 0/10 [00:00<?, ?it/s]  0%|          | 0/10 [00:00<?, ?it/s]
+model : design_one
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 87, in forward
+    c1 = self.conv1(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/design/attention_design_one.py", line 56, in forward
+    return self.conv(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 419, in _conv_forward
+    return F.conv2d(input, weight, self.bias, self.stride,
+RuntimeError: CUDA out of memory. Tried to allocate 162.00 MiB (GPU 0; 10.76 GiB total capacity; 299.83 MiB already allocated; 57.38 MiB free; 306.00 MiB reserved in total by PyTorch)
+  0%|          | 0/853 [00:00<?, ?it/s]  0%|          | 0/853 [00:00<?, ?it/s]
+model : UNet
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/unet.py", line 58, in forward
+    c1 = self.conv1(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/unet.py", line 32, in forward
+    return self.conv(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/batchnorm.py", line 131, in forward
+    return F.batch_norm(
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/functional.py", line 2056, in batch_norm
+    return torch.batch_norm(
+RuntimeError: CUDA out of memory. Tried to allocate 82.00 MiB (GPU 0; 10.76 GiB total capacity; 285.80 MiB already allocated; 7.38 MiB free; 290.00 MiB reserved in total by PyTorch)
+  0%|          | 0/853 [00:00<?, ?it/s]  0%|          | 0/853 [00:00<?, ?it/s]
+model : unet++
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 55, in train
+    outputs = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/unetpp.py", line 92, in forward
+    x0_0 = self.conv0_0(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/unetpp.py", line 31, in forward
+    return self.conv(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 419, in _conv_forward
+    return F.conv2d(input, weight, self.bias, self.stride,
+RuntimeError: CUDA out of memory. Tried to allocate 82.00 MiB (GPU 0; 10.76 GiB total capacity; 209.16 MiB already allocated; 67.38 MiB free; 230.00 MiB reserved in total by PyTorch)
+  0%|          | 0/853 [00:00<?, ?it/s]  0%|          | 0/853 [00:00<?, ?it/s]
+model : Attention_UNet
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/attention_gate_unet.py", line 116, in forward
+    x1 = self.Conv1(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/attention_gate_unet.py", line 31, in forward
+    x = self.conv(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 419, in _conv_forward
+    return F.conv2d(input, weight, self.bias, self.stride,
+RuntimeError: cuDNN error: CUDNN_STATUS_NOT_INITIALIZED
+  0%|          | 0/853 [00:00<?, ?it/s]  0%|          | 0/853 [00:00<?, ?it/s]
+model : cenet
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/cenet.py", line 213, in forward
+    e1 = self.encoder1(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torchvision/models/resnet.py", line 64, in forward
+    out = self.bn2(out)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/batchnorm.py", line 131, in forward
+    return F.batch_norm(
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/functional.py", line 2056, in batch_norm
+    return torch.batch_norm(
+RuntimeError: CUDA out of memory. Tried to allocate 12.00 MiB (GPU 0; 10.76 GiB total capacity; 263.51 MiB already allocated; 5.38 MiB free; 292.00 MiB reserved in total by PyTorch)
+  0%|          | 0/853 [00:00<?, ?it/s]  0%|          | 0/853 [00:00<?, ?it/s]
+model : fcn32s
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/fcn.py", line 218, in forward
+    output = self.pretrained_net(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/fcn.py", line 378, in forward
+    x = self.features[layer](x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 419, in _conv_forward
+    return F.conv2d(input, weight, self.bias, self.stride,
+RuntimeError: CUDA out of memory. Tried to allocate 162.00 MiB (GPU 0; 10.76 GiB total capacity; 245.01 MiB already allocated; 33.38 MiB free; 264.00 MiB reserved in total by PyTorch)
+  0%|          | 0/853 [00:00<?, ?it/s]  0%|          | 0/853 [00:00<?, ?it/s]
+model : UNet
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/unet.py", line 58, in forward
+    c1 = self.conv1(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/unet.py", line 32, in forward
+    return self.conv(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/batchnorm.py", line 131, in forward
+    return F.batch_norm(
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/functional.py", line 2056, in batch_norm
+    return torch.batch_norm(
+RuntimeError: CUDA out of memory. Tried to allocate 82.00 MiB (GPU 0; 10.76 GiB total capacity; 285.80 MiB already allocated; 7.38 MiB free; 290.00 MiB reserved in total by PyTorch)
+  0%|          | 0/853 [00:00<?, ?it/s]  0%|          | 0/853 [00:00<?, ?it/s]
+model : unet++
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 55, in train
+    outputs = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/unetpp.py", line 92, in forward
+    x0_0 = self.conv0_0(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/unetpp.py", line 31, in forward
+    return self.conv(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 419, in _conv_forward
+    return F.conv2d(input, weight, self.bias, self.stride,
+RuntimeError: CUDA out of memory. Tried to allocate 82.00 MiB (GPU 0; 10.76 GiB total capacity; 209.16 MiB already allocated; 67.38 MiB free; 230.00 MiB reserved in total by PyTorch)
+  0%|          | 0/853 [00:00<?, ?it/s]  0%|          | 0/853 [00:00<?, ?it/s]
+model : Attention_UNet
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/attention_gate_unet.py", line 116, in forward
+    x1 = self.Conv1(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/attention_gate_unet.py", line 31, in forward
+    x = self.conv(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 419, in _conv_forward
+    return F.conv2d(input, weight, self.bias, self.stride,
+RuntimeError: cuDNN error: CUDNN_STATUS_NOT_INITIALIZED
+  0%|          | 0/853 [00:00<?, ?it/s]  0%|          | 0/853 [00:00<?, ?it/s]
+model : cenet
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/cenet.py", line 213, in forward
+    e1 = self.encoder1(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/container.py", line 117, in forward
+    input = module(input)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torchvision/models/resnet.py", line 64, in forward
+    out = self.bn2(out)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/batchnorm.py", line 131, in forward
+    return F.batch_norm(
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/functional.py", line 2056, in batch_norm
+    return torch.batch_norm(
+RuntimeError: CUDA out of memory. Tried to allocate 12.00 MiB (GPU 0; 10.76 GiB total capacity; 263.51 MiB already allocated; 5.38 MiB free; 292.00 MiB reserved in total by PyTorch)
+  0%|          | 0/853 [00:00<?, ?it/s]  0%|          | 0/853 [00:00<?, ?it/s]
+model : fcn32s
+Traceback (most recent call last):
+  File "unetzoo/main.py", line 88, in <module>
+    train(device, params, train_dataloader, val_dataloader,
+  File "/home/pc001/w0n9/leo/unetzoo/andytrainer.py", line 61, in train
+    output = model(inputs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/fcn.py", line 218, in forward
+    output = self.pretrained_net(x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/w0n9/leo/unetzoo/model/fcn.py", line 378, in forward
+    x = self.features[layer](x)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/module.py", line 727, in _call_impl
+    result = self.forward(*input, **kwargs)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 423, in forward
+    return self._conv_forward(input, self.weight)
+  File "/home/pc001/anaconda3/envs/xjw_pytorch/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 419, in _conv_forward
+    return F.conv2d(input, weight, self.bias, self.stride,
+RuntimeError: CUDA out of memory. Tried to allocate 162.00 MiB (GPU 0; 10.76 GiB total capacity; 245.01 MiB already allocated; 33.38 MiB free; 264.00 MiB reserved in total by PyTorch)

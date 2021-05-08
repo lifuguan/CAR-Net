@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-15 20:04:53
-LastEditTime: 2021-04-19 19:15:39
+LastEditTime: 2021-05-06 23:50:18
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/core/aceloss.py
@@ -11,6 +11,23 @@ import time
 import numpy as np
 import torch
 import torch.nn as nn
+class DiceLoss(nn.Module):
+	def __init__(self):
+		super(DiceLoss, self).__init__()
+ 
+	def	forward(self, input, target):
+		N = target.size(0)
+		smooth = 1
+ 
+		input_flat = input.view(N, -1)
+		target_flat = target.view(N, -1)
+ 
+		intersection = input_flat * target_flat
+ 
+		loss = 2 * (intersection.sum(1) + smooth) / (input_flat.sum(1) + target_flat.sum(1) + smooth)
+		loss = 1 - loss.sum() / N
+ 
+		return loss
 
 def ACELoss(y_pred, y_true, u=1, a=1, b=1):
     """

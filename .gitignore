@@ -76,3 +76,14 @@ unetzoo/model/__pycache__/unetpp.cpython-37.pyc
 unetzoo/model/__pycache__/kiunet.cpython-38.pyc
 unetzoo/model/__pycache__/smaat_unet.cpython-38.pyc
 unetzoo/core/__pycache__/aceloss.cpython-38.pyc
+pretrained/res2net50_14w_8s-6527dddc.pth
+pretrained/res2net50_26w_4s-06e79181.pth
+pretrained/res2net50_26w_6s-19041792.pth
+pretrained/res2net50_26w_8s-2c7c9f12.pth
+pretrained/res2net50_48w_2s-afed724a.pth
+unetzoo/utils/__pycache__/visual_metric.cpython-38.pyc
+pretrained/res2net50_48w_2s.pth
+pretrained/resnet34-333f7ec4.pth
+unetzoo/design/__pycache__/attention_design_two.cpython-38.pyc
+unetzoo/design/__pycache__/res2net.cpython-38.pyc
+unetzoo/core/__pycache__/loss_fn.cpython-38.pyc
