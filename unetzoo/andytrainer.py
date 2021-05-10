@@ -122,11 +122,11 @@ def val(device, params, model, best_iou, val_dataloader, result, vis, epoch):
                 ax2 = fig.add_subplot(1, 3, 2)
                 ax2.set_title('GT')
                 plt.imshow(img_x, cmap = 'bone')
-                plt.imshow(image_mask, alpha = 0.5, cmap = 'nipy_spectral')
+                plt.imshow(image_mask, alpha = 0.5, cmap = 'Blues_r')
                 ax3 = fig.add_subplot(1, 3, 3)
                 ax3.set_title('Predict')
                 plt.imshow(img_x, cmap = 'bone')
-                plt.imshow(img_y, alpha = 0.5, cmap = 'nipy_spectral')
+                plt.imshow(img_y, alpha = 0.5, cmap = 'Blues_r')
                 assert vis.vis.check_connection()
                 vis.vis.matplot(plt, 
                     opts=dict(legend=str(epoch), title=str(epoch))

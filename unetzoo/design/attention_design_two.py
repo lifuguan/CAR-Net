@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-05-08 21:47:06
+LastEditTime: 2021-05-10 11:40:48
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/design/attention_design_two.py
@@ -58,11 +58,12 @@ class AttentionDesignTwo(nn.Module):
         self.encoder4 = resnet.layer4
 
         self.pool5 = nn.MaxPool2d(2)
-        self.conv5 = nn.Sequential(
-            DoubleConv(512, 1024),
-            DoubleConv(1024, 1024)
-        )
+        self.conv5 = DoubleConv(512, 1024)
+        # Bottle neck
         self.bottleneck = ASPP(1024, 1024)
+        self.dac_block = DAC_Block(1024, 1024)
+        self.rmp_block = RMP_Block(1024, 1024)
+
         self.up6 = nn.ConvTranspose2d(1024, 512, 2, stride=2)
         self.conv6 = DoubleConv(1024, 512)
         self.up7 = nn.ConvTranspose2d(512, 256, 2, stride=2)
@@ -95,8 +96,10 @@ class AttentionDesignTwo(nn.Module):
         pool5 = self.pool5(en4)
         en5 = self.conv5(pool5)   #1024 , 16  , 16
         # bottle = self.bottleneck(en5)
-        up_6 = self.up6(en5)
-        merge6 = self.attention4(en4, en5)
+        bottle1 = self.dac_block(en5)
+        bottle2 = self.rmp_block(bottle1)
+        up_6 = self.up6(bottle2)
+        merge6 = self.attention4(en4, bottle2)
         c6 = self.conv6(torch.cat([up_6, merge6], dim = 1))
         up_7 = self.up7(c6)
         merge7 = self.attention3(en3, c6)
@@ -116,8 +119,65 @@ class AttentionDesignTwo(nn.Module):
 
         return torch.sigmoid(out)
 
+class DAC_Block(nn.Module):
+    def __init__(self, in_channels = 1024, out_channels = 1024):
+        super(DAC_Block, self).__init__()
+        self.atrous_block1 = nn.Conv2d(in_channels, out_channels, 3, 1, 1)
+        self.atrous_block2 = nn.Sequential(
+            nn.Conv2d(in_channels, out_channels, 1, 1, 0),
+            nn.Conv2d(in_channels, out_channels, 3, 1, 1)
+        )
+        self.atrous_block3 = nn.Sequential(
+            nn.Conv2d(in_channels, out_channels, 1, 1, 0),
+            nn.Conv2d(in_channels, out_channels, 3, 1, 1),
+            nn.Conv2d(in_channels, out_channels, 3, 1, 1)
+        )
+        self.atrous_block4 = nn.Sequential(
+            nn.Conv2d(in_channels, out_channels, 1, 1, 0),
+            nn.Conv2d(in_channels, out_channels, 3, 1, 1),
+            nn.Conv2d(in_channels, out_channels, 3, 1, 1),
+            nn.Conv2d(in_channels, out_channels, 3, 1, 1)
+        )
+        self.conv_1x1_output = nn.Conv2d(out_channels * 4, out_channels, 1, 1)
 
+    def forward(self, x):
+        atrous_block1 = self.atrous_block1(x)
+        atrous_block2 = self.atrous_block2(x)
+        atrous_block3 = self.atrous_block3(x)    
+        atrous_block4 = self.atrous_block4(x)    
+        net = self.conv_1x1_output(torch.cat([atrous_block1, atrous_block2,
+                                            atrous_block3, atrous_block4], dim=1))
+        return net
 
+class RMP_Block(nn.Module):
+    def __init__(self, in_channels=1024, out_channels=1024):
+        super(RMP_Block,self).__init__()
+
+        self.pool_block1 = nn.MaxPool2d(kernel_size=2)
+        self.pool_block2 = nn.MaxPool2d(kernel_size=3)
+        self.pool_block3 = nn.MaxPool2d(kernel_size=5)
+        self.pool_block4 = nn.MaxPool2d(kernel_size=6)
+        
+        self.conv_1x1_output = nn.Conv2d(out_channels * 5, out_channels, 1, 1)
+ 
+    def forward(self, x):
+        size = x.shape[2:]
+        img_features = x
+        p1 = self.pool_block1(x)
+        p1 = F.interpolate(p1, size=size, mode='bilinear')
+
+        p2 = self.pool_block2(x)
+        p2 = F.interpolate(p2, size=size, mode='bilinear')
+
+        p3 = self.pool_block3(x)
+        p3 = F.interpolate(p3, size=size, mode='bilinear')
+
+        p4 = self.pool_block4(x)
+        p4 = F.interpolate(p4, size=size, mode='bilinear')
+
+        net = self.conv_1x1_output(torch.cat([img_features, p1, p2, p3, p4], dim=1))
+        return net
+  
 class ASPP(nn.Module):
     def __init__(self, in_channel=1024, depth=1024):
         super(ASPP,self).__init__()

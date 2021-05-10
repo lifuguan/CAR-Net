@@ -488,9 +488,11 @@ class Covid19Dataset(data.Dataset):
         self.mask_paths = glob(self.root + r'/mask/*')
 
         # sklearn函数：分离训练和验证集
-        self.train_img_paths, self.val_img_paths, self.train_mask_paths, self.val_mask_paths = \
+        self.train_img_paths, val_test_img_paths, self.train_mask_paths, val_test_mask_paths = \
             train_test_split(self.img_paths, self.mask_paths, test_size=0.2, random_state=41)
-        self.test_img_paths, self.test_mask_paths = self.val_img_paths,self.val_mask_paths
+
+        self.test_img_paths, self.val_img_paths, self.test_mask_paths,self.val_mask_paths = \
+            train_test_split(val_test_img_paths, val_test_mask_paths, test_size=0.5, random_state=41)
         assert self.state == 'train' or self.state == 'val' or self.state == 'test'
         if self.state == 'train':
             return self.train_img_paths,self.train_mask_paths
@@ -537,9 +539,11 @@ class LungDataset(data.Dataset):
         self.mask_paths = glob(self.root + r'/mask/*')
 
         # sklearn函数：分离训练和验证集
-        self.train_img_paths, self.val_img_paths, self.train_mask_paths, self.val_mask_paths = \
-            train_test_split(self.img_paths, self.mask_paths, test_size=0.05, random_state=41)
-        self.test_img_paths, self.test_mask_paths = self.val_img_paths,self.val_mask_paths
+        self.train_img_paths, val_test_img_paths, self.train_mask_paths, val_test_mask_paths = \
+            train_test_split(self.img_paths, self.mask_paths, test_size=0.2, random_state=41)
+
+        self.test_img_paths, self.val_img_paths, self.test_mask_paths,self.val_mask_paths = \
+            train_test_split(val_test_img_paths, val_test_mask_paths, test_size=0.5, random_state=41)
         assert self.state == 'train' or self.state == 'val' or self.state == 'test'
         if self.state == 'train':
             return self.train_img_paths,self.train_mask_paths
