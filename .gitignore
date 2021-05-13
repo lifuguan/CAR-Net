@@ -87,3 +87,11 @@ pretrained/resnet34-333f7ec4.pth
 unetzoo/design/__pycache__/attention_design_two.cpython-38.pyc
 unetzoo/design/__pycache__/res2net.cpython-38.pyc
 unetzoo/core/__pycache__/loss_fn.cpython-38.pyc
+result/liver/unet++/accuracy_epoch_50_batch_2.npy
+result/liver/unet++/dice_epoch_50_batch_2.npy
+result/liver/unet++/epoch_50_batch_2_4.pkl
+result/liver/unet++/epoch_50_batch_2.png
+result/liver/unet++/f1_score_epoch_50_batch_2.npy
+result/liver/unet++/iou_epoch_50_batch_2.npy
+result/liver/unet++/precision_epoch_50_batch_2.npy
+unetzoo/design/__pycache__/attention_design_three.cpython-38.pyc

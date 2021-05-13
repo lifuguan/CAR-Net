@@ -1,5 +1,6 @@
 {
     "python.pythonPath": "/home/pc001/anaconda3/envs/xjw_pytorch/bin/python",
     "jupyter.jupyterServerType": "local",
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "python.analysis.extraPaths": ["unetzoo/"]
 }
