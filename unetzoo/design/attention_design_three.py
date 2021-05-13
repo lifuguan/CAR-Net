@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-05-13 12:40:56
+LastEditTime: 2021-05-12 15:10:12
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/design/attention_design_two.py
@@ -15,9 +15,6 @@ FilePath: /leo/unetzoo/design/attention_design_two.py
 # Date: 2021-01-30
 #
 
-
-# from res2net import res2net50_48w_2s, res2net50_26w_4s
-
 import torch.nn as nn
 import torch
 from functools import partial
@@ -26,7 +23,7 @@ from torchvision import models
 from torchsummary import summary
 import os
 
-__all__ = ["desgin_two"]
+__all__ = ["desgin_three"]
 
 class DoubleConv(nn.Module):
     def __init__(self, in_ch, out_ch):
@@ -42,9 +39,9 @@ class DoubleConv(nn.Module):
     def forward(self, input):
         return self.conv(input)
 
-class AttentionDesignTwo(nn.Module):
+class AttentionDesignThree(nn.Module):
     def __init__(self, in_ch, out_ch):
-        super(AttentionDesignTwo, self).__init__()
+        super(AttentionDesignThree, self).__init__()
         resnet = models.resnet34(pretrained=True)
         
         # self.firstconv = DoubleConv(in_ch, 64)
@@ -95,11 +92,11 @@ class AttentionDesignTwo(nn.Module):
 
         pool5 = self.pool5(en4)
         en5 = self.conv5(pool5)   #1024 , 16  , 16
-        bottle = self.bottleneck(en5)
-        # bottle1 = self.dac_block(en5)
-        # bottle2 = self.rmp_block(bottle1)
-        up_6 = self.up6(bottle)
-        merge6 = self.attention4(en4, bottle)
+        # bottle = self.bottleneck(en5)
+        bottle1 = self.dac_block(en5)
+        bottle2 = self.rmp_block(bottle1)
+        up_6 = self.up6(bottle2)
+        merge6 = self.attention4(en4, bottle2)
         c6 = self.conv6(torch.cat([up_6, merge6], dim = 1))
         up_7 = self.up7(c6)
         merge7 = self.attention3(en3, c6)
@@ -122,31 +119,20 @@ class AttentionDesignTwo(nn.Module):
 class DAC_Block(nn.Module):
     def __init__(self, in_channels = 1024, out_channels = 1024):
         super(DAC_Block, self).__init__()
-        self.atrous_block1 = nn.Conv2d(in_channels, out_channels, 3, 1, 1)
-        self.atrous_block2 = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, 1, 1, 0),
-            nn.Conv2d(out_channels, out_channels, 3, 1, 1)
-        )
-        self.atrous_block3 = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, 1, 1, 0),
-            nn.Conv2d(out_channels, out_channels, 3, 1, 1),
-            nn.Conv2d(out_channels, out_channels, 3, 1, 1)
-        )
-        self.atrous_block4 = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, 1, 1, 0),
-            nn.Conv2d(out_channels, out_channels, 3, 1, 1),
-            nn.Conv2d(out_channels, out_channels, 3, 1, 1),
-            nn.Conv2d(out_channels, out_channels, 3, 1, 1)
-        )
+        self.conv1 = nn.Conv2d(in_channels, out_channels, 3, 1, 1)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, 3, 1, 1)
+        self.conv3 = nn.Conv2d(out_channels, out_channels, 3, 1, 1)
         self.conv_1x1_output = nn.Conv2d(out_channels * 4, out_channels, 1, 1)
 
     def forward(self, x):
-        atrous_block1 = self.atrous_block1(x)
-        atrous_block2 = self.atrous_block2(x)
-        atrous_block3 = self.atrous_block3(x)    
-        atrous_block4 = self.atrous_block4(x)    
-        net = self.conv_1x1_output(torch.cat([atrous_block1, atrous_block2,
-                                            atrous_block3, atrous_block4], dim=1))
+        feature1 = x
+        x1 = self.conv1(x)
+        feature2 = x1
+        x2 = self.conv2(x1)
+        feature3 = x2
+        feature4 = self.conv3(x2)
+
+        net = self.conv_1x1_output(torch.cat([feature1, feature2, feature3, feature4], dim=1))
         return net
 
 class RMP_Block(nn.Module):
@@ -190,7 +176,7 @@ class ASPP(nn.Module):
         self.atrous_block6 = nn.Conv2d(in_channel, depth, 3, 1, padding=6, dilation=6)
         self.atrous_block12 = nn.Conv2d(in_channel, depth, 3, 1, padding=12, dilation=12)
         self.atrous_block18 = nn.Conv2d(in_channel, depth, 3, 1, padding=18, dilation=18)
-        self.conv_1x1_output = nn.Conv2d(depth * 5, depth, 1, 1)
+        self.conv_1x1_output = nn.Conv2d(depth * 4, depth, 1, 1)
  
     def forward(self, x):
         size = x.shape[2:]
@@ -200,16 +186,16 @@ class ASPP(nn.Module):
         image_features = F.interpolate(image_features, size=size, mode='bilinear')
  
         atrous_block1 = self.atrous_block1(x)
-        # atrous_block2 = self.atrous_block2(x)
-        # atrous_block3 = self.atrous_block3(x)
+        atrous_block2 = self.atrous_block2(x)
+        atrous_block3 = self.atrous_block3(x)
         atrous_block6 = self.atrous_block6(x)
-        atrous_block12 = self.atrous_block12(x)
-        atrous_block18 = self.atrous_block18(x)
+        # atrous_block12 = self.atrous_block12(x)
+        # atrous_block18 = self.atrous_block18(x)
 
-        net = self.conv_1x1_output(torch.cat([image_features, atrous_block1, atrous_block6,
-                                              atrous_block12, atrous_block18], dim=1))
-        # net = self.conv_1x1_output(torch.cat([image_features, atrous_block1, atrous_block2,
-        #                                       atrous_block3], dim=1))
+        # net = self.conv_1x1_output(torch.cat([image_features, atrous_block1, atrous_block6,
+        #                                       atrous_block12, atrous_block18], dim=1))
+        net = self.conv_1x1_output(torch.cat([image_features, atrous_block1, atrous_block2,
+                                              atrous_block3], dim=1))
         return net
      
 nonlinearity = partial(F.relu, inplace=True)
@@ -341,5 +327,5 @@ class SpatialGate(nn.Module):
 if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = AttentionDesignTwo(3, 1).to(device)
+    model = AttentionDesignThree(3, 1).to(device)
     summary(model,(3, 512, 512))    #Succeed!
