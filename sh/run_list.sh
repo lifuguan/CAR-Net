@@ -1,7 +1,12 @@
-python unetzoo/main.py -m design_three -d COVID19 -l hybrid -g 0 -b 3
-python unetzoo/main.py -m design_two   -d COVID19 -l BCE -g 0 -b 3
-python unetzoo/main.py -m design_two   -d COVID19 -l hybrid -g 0 -b 3
-python unetzoo/main.py -m design_two   -d COVID19 -l ACELoss -g 0 -b 3
+# python unetzoo/main.py -m resnet34_unet   -d dsb2018Cell -l BCE -g 0 -b 3
+# python unetzoo/main.py -m only_attention  -d dsb2018Cell -l BCE -g 0 -b 3
+# python unetzoo/main.py -m only_bottleneck -d dsb2018Cell -l BCE -g 0 -b 3
+# python unetzoo/main.py -m design_three    -d dsb2018Cell -l BCE -g 0 -b 3
+
+# python unetzoo/main.py -m resnet34_unet   -d COVID19 -l BCE -g 0 -b 3
+python unetzoo/main.py -m only_attention  -d COVID19 -l BCE -g 0 -b 3
+# python unetzoo/main.py -m only_bottleneck -d COVID19 -l BCE -g 0 -b 3
+python unetzoo/main.py -m design_three    -d COVID19 -l BCE -g 0 -b 3
 
 # python unetzoo/main.py -m UNet        -d dsb2018Cell -l BCE -g 1 -b 3
 # python unetzoo/main.py -m unet++ -d dsb2018Cell -l BCE -g 1 -b 3

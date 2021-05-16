@@ -95,3 +95,5 @@ result/liver/unet++/f1_score_epoch_50_batch_2.npy
 result/liver/unet++/iou_epoch_50_batch_2.npy
 result/liver/unet++/precision_epoch_50_batch_2.npy
 unetzoo/design/__pycache__/attention_design_three.cpython-38.pyc
+nohup1.out
+nohup.out

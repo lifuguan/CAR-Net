@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-09 18:18:40
-LastEditTime: 2021-05-10 10:12:08
+LastEditTime: 2021-05-14 11:24:32
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/test.py
@@ -40,12 +40,12 @@ if __name__ == '__main__':
         # 载入参数
     parser = argparse.ArgumentParser(description='PyTorch Training')
     parser.add_argument('-g', '--gpu', type=str, choices=['0', '1'], default='0')
-    parser.add_argument('-m', '--model', type=str, default='Attention_UNet')
+    parser.add_argument('-m', '--model', type=str, default='design_three')
     parser.add_argument('-l', '--loss', type=str,
-                        choices=['BCE', 'ACELoss', 'hybrid'], default='hybrid')
+                        choices=['BCE', 'ACELoss', 'hybrid'], default='BCE')
     parser.add_argument('-d', '--dataset', type=str,
                         choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye',
-                         'esophagus', 'corneal', 'racecar', 'COVID19', 'lung'], default='COVID19')
+                         'esophagus', 'corneal', 'racecar', 'COVID19', 'lung'], default='dsb2018Cell')
     parser.add_argument('--ngpu', default=2, type=int, metavar='G',
                         help='number of gpus to use')
     parser.add_argument('-j', '--workers', default=8, type=int, metavar='N',
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     # 实验结果记录
     result = ExpResult(params)
     result.expinfo()
-    shutil.copy('result/unetzoo/20210509-220318-Attention_UNet-BCE-COVID19/train/Attention_UNet-COVID19-40-3.pth', result.exp_dir + '/train')
+    shutil.copy('result/unetzoo/20210514-105648-design_three-BCE-dsb2018Cell/train/design_three-dsb2018Cell-40-3.pth', result.exp_dir + '/train')
 
     os.environ['CUDA_VISIBLE_DEVICES'] = params.gpu
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

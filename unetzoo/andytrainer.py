@@ -62,6 +62,8 @@ def train(device, params, train_dataloader, val_dataloader, model, criterion, di
                         loss = criterion(output, labels)
                     elif params.loss == "hybrid":
                         loss = 0.5 * criterion(output, labels) + params.theta * ACELoss(output, labels) +0.5 * dice_loss(output, labels)
+                    elif params.loss == "hybrid2":
+                        loss = 0.5 * criterion(output, labels) + 0.5 * dice_loss(output, labels)
                     elif params.loss == "ACELoss":
                         loss = ACELoss(output, labels)
 
@@ -115,7 +117,7 @@ def val(device, params, model, best_iou, val_dataloader, result, vis, epoch):
             img_y = binary_image(img_y, 0.5)
 
             if i == 5:
-                fig = plt.figure()
+                fig = plt.figure(figsize=(10, 3))
                 ax1 = fig.add_subplot(1, 3, 1)
                 ax1.set_title('Origin')
                 plt.imshow(img_x, cmap = 'bone')

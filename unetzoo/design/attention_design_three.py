@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-05-12 15:10:12
+LastEditTime: 2021-05-13 21:51:59
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/design/attention_design_two.py
@@ -44,7 +44,6 @@ class AttentionDesignThree(nn.Module):
         super(AttentionDesignThree, self).__init__()
         resnet = models.resnet34(pretrained=True)
         
-        # self.firstconv = DoubleConv(in_ch, 64)
         self.firstconv = resnet.conv1
         self.firstbn = resnet.bn1
         self.firstrelu = resnet.relu
@@ -79,7 +78,7 @@ class AttentionDesignThree(nn.Module):
         self.finalrelu1 = nonlinearity
         self.finalconv2 = nn.Conv2d(32, 32, 3, padding=1)
         self.finalrelu2 = nonlinearity
-        self.finalconv3 = nn.Conv2d(32, 1, 3, padding=1)
+        self.finalconv3 = nn.Conv2d(32, out_ch, 3, padding=1)
     def forward(self, x):
         x = self.firstconv(x)
         x = self.firstbn(x)
@@ -321,6 +320,153 @@ class SpatialGate(nn.Module):
         scale = torch.sigmoid(x_out) # broadcasting
         return x * scale    
 
+class Design_MRC_RMP(nn.Module):
+    def __init__(self, in_ch, out_ch):
+        super(Design_MRC_RMP, self).__init__()
+        resnet = models.resnet34(pretrained=True)
+        
+        self.firstconv = resnet.conv1
+        self.firstbn = resnet.bn1
+        self.firstrelu = resnet.relu
+        self.firstmaxpool = resnet.maxpool
+        self.encoder1 = resnet.layer1
+        self.encoder2 = resnet.layer2
+        self.encoder3 = resnet.layer3
+        self.encoder4 = resnet.layer4
+
+        self.pool5 = nn.MaxPool2d(2)
+        self.conv5 = DoubleConv(512, 1024)
+        # Bottle neck
+        self.bottleneck = ASPP(1024, 1024)
+        self.dac_block = DAC_Block(1024, 1024)
+        self.rmp_block = RMP_Block(1024, 1024)
+
+        self.up6 = nn.ConvTranspose2d(1024, 512, 2, stride=2)
+        self.conv6 = DoubleConv(1024, 512)
+        self.up7 = nn.ConvTranspose2d(512, 256, 2, stride=2)
+        self.conv7 = DoubleConv(512, 256)
+        self.up8 = nn.ConvTranspose2d(256, 128, 2, stride=2)
+        self.conv8 = DoubleConv(256, 128)
+        self.up9 = nn.ConvTranspose2d(128, 64, 2, stride=2)
+        self.conv9 = DoubleConv(128, 64)
+
+        self.attention1 = AttentionBlock(64, 64)
+        self.attention2 = AttentionBlock(128, 128)
+        self.attention3 = AttentionBlock(256, 256)
+        self.attention4 = AttentionBlock(512, 512)
+
+        self.finaldeconv1 = nn.ConvTranspose2d(64, 32, 4, 2, 1)
+        self.finalrelu1 = nonlinearity
+        self.finalconv2 = nn.Conv2d(32, 32, 3, padding=1)
+        self.finalrelu2 = nonlinearity
+        self.finalconv3 = nn.Conv2d(32, out_ch, 3, padding=1)
+    def forward(self, x):
+        x = self.firstconv(x)
+        x = self.firstbn(x)
+        x = self.firstrelu(x)
+        # x = self.firstmaxpool(x)
+        en1 = self.encoder1(x)    # 64  , 512 , 512
+        en2 = self.encoder2(en1)  # 128 , 256 , 256
+        en3 = self.encoder3(en2)  # 256 , 128 , 128
+        en4 = self.encoder4(en3)  # 512 , 64  , 64
+
+        pool5 = self.pool5(en4)
+        en5 = self.conv5(pool5)   #1024 , 16  , 16
+        # bottle = self.bottleneck(en5)
+        bottle1 = self.dac_block(en5)
+        bottle2 = self.rmp_block(bottle1)
+        up_6 = self.up6(bottle2)
+        c6 = self.conv6(torch.cat([up_6, en4], dim = 1))
+        up_7 = self.up7(c6)
+        c7 = self.conv7(torch.cat([up_7, en3], dim = 1))
+        up_8 = self.up8(c7)
+        c8 = self.conv8(torch.cat([up_8, en2], dim = 1))
+        up_9 = self.up9(c8)
+        c9 = self.conv9(torch.cat([up_9, en1], dim = 1))
+        
+        out = self.finaldeconv1(c9)
+        out = self.finalrelu1(out)
+        out = self.finalconv2(out)
+        out = self.finalrelu2(out)
+        out = self.finalconv3(out)
+
+        return torch.sigmoid(out)
+
+class Design_Attention(nn.Module):
+    def __init__(self, in_ch, out_ch):
+        super(Design_Attention, self).__init__()
+        resnet = models.resnet34(pretrained=True)
+        
+        self.firstconv = resnet.conv1
+        self.firstbn = resnet.bn1
+        self.firstrelu = resnet.relu
+        self.firstmaxpool = resnet.maxpool
+        self.encoder1 = resnet.layer1
+        self.encoder2 = resnet.layer2
+        self.encoder3 = resnet.layer3
+        self.encoder4 = resnet.layer4
+
+        self.pool5 = nn.MaxPool2d(2)
+        self.conv5 = DoubleConv(512, 1024)
+        # Bottle neck
+        self.bottleneck = ASPP(1024, 1024)
+        self.dac_block = DAC_Block(1024, 1024)
+        self.rmp_block = RMP_Block(1024, 1024)
+
+        self.up6 = nn.ConvTranspose2d(1024, 512, 2, stride=2)
+        self.conv6 = DoubleConv(1024, 512)
+        self.up7 = nn.ConvTranspose2d(512, 256, 2, stride=2)
+        self.conv7 = DoubleConv(512, 256)
+        self.up8 = nn.ConvTranspose2d(256, 128, 2, stride=2)
+        self.conv8 = DoubleConv(256, 128)
+        self.up9 = nn.ConvTranspose2d(128, 64, 2, stride=2)
+        self.conv9 = DoubleConv(128, 64)
+
+        self.attention1 = AttentionBlock(64, 64)
+        self.attention2 = AttentionBlock(128, 128)
+        self.attention3 = AttentionBlock(256, 256)
+        self.attention4 = AttentionBlock(512, 512)
+
+        self.finaldeconv1 = nn.ConvTranspose2d(64, 32, 4, 2, 1)
+        self.finalrelu1 = nonlinearity
+        self.finalconv2 = nn.Conv2d(32, 32, 3, padding=1)
+        self.finalrelu2 = nonlinearity
+        self.finalconv3 = nn.Conv2d(32, out_ch, 3, padding=1)
+    def forward(self, x):
+        x = self.firstconv(x)
+        x = self.firstbn(x)
+        x = self.firstrelu(x)
+        # x = self.firstmaxpool(x)
+        en1 = self.encoder1(x)    # 64  , 512 , 512
+        en2 = self.encoder2(en1)  # 128 , 256 , 256
+        en3 = self.encoder3(en2)  # 256 , 128 , 128
+        en4 = self.encoder4(en3)  # 512 , 64  , 64
+
+        pool5 = self.pool5(en4)
+        en5 = self.conv5(pool5)   #1024 , 16  , 16
+        # bottle = self.bottleneck(en5)
+        # bottle1 = self.dac_block(en5)
+        # bottle2 = self.rmp_block(bottle1)
+        up_6 = self.up6(en5)
+        merge6 = self.attention4(en4, en5)
+        c6 = self.conv6(torch.cat([up_6, merge6], dim = 1))
+        up_7 = self.up7(c6)
+        merge7 = self.attention3(en3, c6)
+        c7 = self.conv7(torch.cat([up_7, merge7], dim = 1))
+        up_8 = self.up8(c7)
+        merge8 = self.attention2(en2, c7)
+        c8 = self.conv8(torch.cat([up_8, merge8], dim = 1))
+        up_9 = self.up9(c8)
+        merge9 = self.attention1(en1, c8)
+        c9 = self.conv9(torch.cat([up_9, merge9], dim = 1))
+        
+        out = self.finaldeconv1(c9)
+        out = self.finalrelu1(out)
+        out = self.finalconv2(out)
+        out = self.finalrelu2(out)
+        out = self.finalconv3(out)
+
+        return torch.sigmoid(out)
 
 
 """print layers and params of network"""

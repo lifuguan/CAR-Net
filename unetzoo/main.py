@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-05-08 22:13:39
+LastEditTime: 2021-05-13 13:56:23
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/main.py
@@ -24,7 +24,6 @@ import torch
 from core import getDataset
 from model import getModel
 from utils.expresult import ExpResult
-from utils.hyperparams import HyperParams
 from andytrainer import train
 from andytrainer import test
 
@@ -37,12 +36,12 @@ if __name__ == '__main__':
         # 载入参数
     parser = argparse.ArgumentParser(description='PyTorch Training')
     parser.add_argument('-g', '--gpu', type=str, choices=['0', '1'], default='0')
-    parser.add_argument('-m', '--model', type=str, default='design_two')
+    parser.add_argument('-m', '--model', type=str, default='design_three')
     parser.add_argument('-l', '--loss', type=str,
-                        choices=['BCE', 'ACELoss', 'hybrid'], default='hybrid')
+                        choices=['BCE', 'ACELoss', 'hybrid', 'hybrid2'], default='hybrid')
     parser.add_argument('-d', '--dataset', type=str,
                         choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye',
-                         'esophagus', 'corneal', 'racecar', 'COVID19', 'lung'], default='liver')
+                         'esophagus', 'corneal', 'racecar', 'COVID19', 'lung'], default='COVID19')
     parser.add_argument('--ngpu', default=2, type=int, metavar='G',
                         help='number of gpus to use')
     parser.add_argument('-j', '--workers', default=8, type=int, metavar='N',
@@ -90,7 +89,7 @@ if __name__ == '__main__':
     optimizer = optim.Adam(model.parameters())
 
     
-    vis = Visualizer(env='{}'.format(params.model + '-' + params.dataset))
+    vis = Visualizer(env='{}'.format(params.model + '-' + params.dataset + '-' + params.loss))
     if 'train' in params.action:
         train(device, params, train_dataloader, val_dataloader,
               model, criterion, dice_loss, optimizer, result, vis)

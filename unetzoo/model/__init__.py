@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-05-12 18:38:02
+LastEditTime: 2021-05-13 21:52:43
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/model/__init__.py
@@ -31,7 +31,7 @@ from model.mobilenetv3_seg import MobileNetV3Seg
 
 from design.attention_design_one import AttentionDesignOne
 from design.attention_design_two import AttentionDesignTwo
-from design.attention_design_three import AttentionDesignThree
+from design.attention_design_three import AttentionDesignThree, Design_MRC_RMP, Design_Attention
 
 # 获得模型实例
 def getModel(device, params):
@@ -71,4 +71,8 @@ def getModel(device, params):
         model = AttentionDesignTwo(3, 1).to(device)
     if params.model == "design_three":
         model = AttentionDesignThree(3, 1).to(device)
+    if params.model == "only_attention":
+        model = Design_Attention(3, 1).to(device)
+    if params.model == "only_bottleneck":
+        model = Design_MRC_RMP(3, 1).to(device)
     return model
