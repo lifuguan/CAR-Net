@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-15 20:04:53
-LastEditTime: 2021-05-06 23:50:18
+LastEditTime: 2021-06-06 13:39:01
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/core/aceloss.py
@@ -29,7 +29,15 @@ class DiceLoss(nn.Module):
  
 		return loss
 
-def ACELoss(y_pred, y_true, u=1, a=1, b=1):
+# def ACELoss(y_pred, y_true, u=1, a=0.005, b=1.8):
+# def ACELoss(y_pred, y_true, u=1, a=0.008, b=1.8):
+# def ACELoss(y_pred, y_true, u=1, a=0.003, b=2.1):
+# def ACELoss(y_pred, y_true, u=1, a=0.002, b=2.1):
+# def ACELoss(y_pred, y_true, u=1, a=0.001, b=2.5):
+# def ACELoss(y_pred, y_true, u=1, a=0.001, b=1.5):
+# def ACELoss(y_pred, y_true, u=1, a=0.0001, b=0.19):
+# def ACELoss(y_pred, y_true, u=1, a=0.0008, b=0.19):
+def ACELoss(y_pred, y_true, u=1, a=0.000, b=0.19):
     """
     Active Contour Loss
     based on total variations and mean curvature
@@ -96,7 +104,7 @@ def ACELoss(y_pred, y_true, u=1, a=1, b=1):
         region = u * region_in + region_out
         return region
 
-    def elastica(input, a=0.001, b=2):
+    def elastica(input, a=0.0002, b=1.85):
         ci, cj = first_derivative(input)  # 一阶偏导
         cii, cjj, cij = second_derivative(input, ci, cj) # 二阶偏导
         beta = 1e-8

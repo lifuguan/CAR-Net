@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-05-13 21:51:59
+LastEditTime: 2021-07-13 14:24:02
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/design/attention_design_two.py
@@ -95,7 +95,7 @@ class AttentionDesignThree(nn.Module):
         bottle1 = self.dac_block(en5)
         bottle2 = self.rmp_block(bottle1)
         up_6 = self.up6(bottle2)
-        merge6 = self.attention4(en4, bottle2)
+        merge6= self.attention4(en4, bottle2)
         c6 = self.conv6(torch.cat([up_6, merge6], dim = 1))
         up_7 = self.up7(c6)
         merge7 = self.attention3(en3, c6)
@@ -247,7 +247,7 @@ class AttentionBlock(nn.Module):
 
         channel3 = self.SpatialGate(b1)
 
-        psi = channel1 + channel2 + channel3
+        psi = channel1  + channel2 + channel3
 
         return x * psi
 
@@ -393,7 +393,7 @@ class Design_MRC_RMP(nn.Module):
         return torch.sigmoid(out)
 
 class Design_Attention(nn.Module):
-    def __init__(self, in_ch, out_ch):
+    def __init__(self, in_ch, out_ch, type=0):
         super(Design_Attention, self).__init__()
         resnet = models.resnet34(pretrained=True)
         
@@ -444,11 +444,9 @@ class Design_Attention(nn.Module):
 
         pool5 = self.pool5(en4)
         en5 = self.conv5(pool5)   #1024 , 16  , 16
-        # bottle = self.bottleneck(en5)
-        # bottle1 = self.dac_block(en5)
-        # bottle2 = self.rmp_block(bottle1)
+
         up_6 = self.up6(en5)
-        merge6 = self.attention4(en4, en5)
+        merge6, psi4 = self.attention4(en4, en5)
         c6 = self.conv6(torch.cat([up_6, merge6], dim = 1))
         up_7 = self.up7(c6)
         merge7 = self.attention3(en3, c6)
@@ -466,12 +464,12 @@ class Design_Attention(nn.Module):
         out = self.finalrelu2(out)
         out = self.finalconv3(out)
 
-        return torch.sigmoid(out)
+        return torch.sigmoid(out), psi4
 
 
 """print layers and params of network"""
 if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = AttentionDesignThree(3, 1).to(device)
+    model = Design_Attention(3, 1).to(device)
     summary(model,(3, 512, 512))    #Succeed!

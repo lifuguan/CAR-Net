@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-05-13 21:52:43
+LastEditTime: 2021-06-07 21:24:06
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/model/__init__.py
@@ -32,6 +32,7 @@ from model.mobilenetv3_seg import MobileNetV3Seg
 from design.attention_design_one import AttentionDesignOne
 from design.attention_design_two import AttentionDesignTwo
 from design.attention_design_three import AttentionDesignThree, Design_MRC_RMP, Design_Attention
+from design.attention_access import AttentionAccess
 
 # 获得模型实例
 def getModel(device, params):
@@ -50,6 +51,8 @@ def getModel(device, params):
         model = R2U_Net(3, 1).to(device)
     if params.model == 'fcn32s':
         model = get_fcn32s(1).to(device)
+    if params.model == 'fcn8s':
+        model = get_fcn8s(1).to(device=device)
     if params.model == 'myChannelUnet':
         model = ChannelUnet(3, 1).to(device)
     if params.model == 'fcn8s':
@@ -75,4 +78,6 @@ def getModel(device, params):
         model = Design_Attention(3, 1).to(device)
     if params.model == "only_bottleneck":
         model = Design_MRC_RMP(3, 1).to(device)
+    if params.model == "attention_access":
+        model = AttentionAccess(3, 1).to(device)
     return model

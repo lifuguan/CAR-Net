@@ -74,13 +74,7 @@ class DriveEyeDataset(data.Dataset):
         mask = cv2.resize(mask, (imgx, imgy))
         pic = pic.astype('float32') / 255
         mask = mask.astype('float32') / 255
-        # if self.aug:
-        #     if random.uniform(0, 1) > 0.5:
-        #         pic = pic[:, ::-1, :].copy()
-        #         mask = mask[:, ::-1].copy()
-        #     if random.uniform(0, 1) > 0.5:
-        #         pic = pic[::-1, :, :].copy()
-        #         mask = mask[::-1, :].copy()
+
         if self.transform is not None:
             img_x = self.transform(pic)
         if self.target_transform is not None:

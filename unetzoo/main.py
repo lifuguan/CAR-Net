@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-03 22:36:24
-LastEditTime: 2021-05-13 13:56:23
+LastEditTime: 2021-06-02 14:50:13
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/main.py
@@ -41,14 +41,14 @@ if __name__ == '__main__':
                         choices=['BCE', 'ACELoss', 'hybrid', 'hybrid2'], default='hybrid')
     parser.add_argument('-d', '--dataset', type=str,
                         choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye',
-                         'esophagus', 'corneal', 'racecar', 'COVID19', 'lung'], default='COVID19')
+                         'esophagus', 'corneal', 'racecar', 'COVID19', 'lung'], default='driveEye')
     parser.add_argument('--ngpu', default=2, type=int, metavar='G',
                         help='number of gpus to use')
     parser.add_argument('-j', '--workers', default=8, type=int, metavar='N',
                         help='number of data loading workers (default: 2)')
     parser.add_argument('--epochs', default=40, type=int, metavar='N',
                         help='number of total epochs to run')
-    parser.add_argument('-b', '--batch-size', default=4, type=int,
+    parser.add_argument('-b', '--batch-size', default=5, type=int,
                         metavar='N', help='mini-batch size (default: 2)')
     parser.add_argument('--threshold', default='None', type=str)
     parser.add_argument('--action', default='train&test', type=str)

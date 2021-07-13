@@ -28,7 +28,7 @@ from core.metricstable import MetricsTable
 
 def train(device, params, train_dataloader, val_dataloader, model, criterion, dice_loss, optimizer, result, vis):
     result.print('train start......')
-    best_iou, aver_iou, aver_dice, aver_hd = 0, 0, 0, 0
+    best_iou = 0
     num_epochs = params.epochs
     threshold = params.threshold
     loss_list = []
@@ -88,6 +88,7 @@ def train(device, params, train_dataloader, val_dataloader, model, criterion, di
         result.print("epoch %d loss: %0.3f" % (epoch, epoch_loss))
         vis.plot_many_stack({'sensitivity':avg_sensitivity,'iou':avg_iou, 'dice':avg_dice, 'f1_score':avg_f1score})
         vis.plot_many_stack({'hd':avg_hd})
+        vis.plot_many_stack({'loss:'+params.loss:epoch_loss})
     result.savelosses('loss', loss_list)
     epoch_metrics.savemetrics('train')
     return model
@@ -113,22 +114,20 @@ def val(device, params, model, best_iou, val_dataloader, result, vis, epoch):
 
             # 图像二值化处理
             mask_img= read_mask(mask[0], np.size(img_y,1))
-            image_mask = binary_image(mask_img, 30)  # check it 
-            img_y = binary_image(img_y, 0.5)
+            image_mask = binary_image(mask_img, 10)  # check it 
+            img_y = binary_image(img_y, 0.01)
 
             if i == 5:
-                fig = plt.figure(figsize=(10, 3))
+                fig = plt.figure(figsize=(5, 1.5))
                 ax1 = fig.add_subplot(1, 3, 1)
                 ax1.set_title('Origin')
-                plt.imshow(img_x, cmap = 'bone')
+                plt.imshow(img_x)
                 ax2 = fig.add_subplot(1, 3, 2)
                 ax2.set_title('GT')
-                plt.imshow(img_x, cmap = 'bone')
-                plt.imshow(image_mask, alpha = 0.5, cmap = 'Blues_r')
+                plt.imshow(image_mask)
                 ax3 = fig.add_subplot(1, 3, 3)
                 ax3.set_title('Predict')
-                plt.imshow(img_x, cmap = 'bone')
-                plt.imshow(img_y, alpha = 0.5, cmap = 'Blues_r')
+                plt.imshow(img_y)
                 assert vis.vis.check_connection()
                 vis.vis.matplot(plt, 
                     opts=dict(legend=str(epoch), title=str(epoch))
@@ -177,7 +176,7 @@ def test(device, params, test_dataloader, model, result, vis):
             else:
                 predict = torch.squeeze(predict).cpu().numpy()
             _,predict = cv2.threshold(predict, 0.1, 1, cv2.THRESH_BINARY)
-            
+
             # 图像二值化处理
             mask_img= read_mask(mask_path[0], np.size(predict,1))
             image_mask = binary_image(mask_img, 30)  # check it 
@@ -196,7 +195,9 @@ def test(device, params, test_dataloader, model, result, vis):
             hd = get_hd(predict, image_mask)
             test_metrics.addmetric(accuracy, precision, sensitivity, specificity, f1score, meanIoU, fwIoU, iou, dice, hd)
 
-            fig = plt.figure()
+
+            # 保存测试集截图
+            fig = plt.figure(figsize=(20, 6))
             ax1 = fig.add_subplot(1, 3, 1)
             ax1.set_title('input')
             origin_img = Image.open(pic_path[0])

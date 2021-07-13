@@ -1,12 +1,15 @@
-# python unetzoo/main.py -m resnet34_unet   -d dsb2018Cell -l BCE -g 0 -b 3
-# python unetzoo/main.py -m only_attention  -d dsb2018Cell -l BCE -g 0 -b 3
-# python unetzoo/main.py -m only_bottleneck -d dsb2018Cell -l BCE -g 0 -b 3
-# python unetzoo/main.py -m design_three    -d dsb2018Cell -l BCE -g 0 -b 3
+# python unetzoo/main.py -m Attention_UNet -d driveEye -l BCE -g 0 -b 5
+###
+ # @Author: your name
+ # @Date: 2021-02-19 16:53:13
+ # @LastEditTime: 2021-06-07 22:03:47
+ # @LastEditors: Please set LastEditors
+ # @Description: In User Settings Edit
+ # @FilePath: /leo/sh/run_list.sh
+### 
 
-# python unetzoo/main.py -m resnet34_unet   -d COVID19 -l BCE -g 0 -b 3
-python unetzoo/main.py -m only_attention  -d COVID19 -l BCE -g 0 -b 3
-# python unetzoo/main.py -m only_bottleneck -d COVID19 -l BCE -g 0 -b 3
-python unetzoo/main.py -m design_three    -d COVID19 -l BCE -g 0 -b 3
+python unetzoo/main.py -m attention_access -d liver -l BCE -g 1 -b 3
+
 
 # python unetzoo/main.py -m UNet        -d dsb2018Cell -l BCE -g 1 -b 3
 # python unetzoo/main.py -m unet++ -d dsb2018Cell -l BCE -g 1 -b 3

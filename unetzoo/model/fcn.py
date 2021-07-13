@@ -416,7 +416,7 @@ def get_fcn32s(n_class=1):
     vgg_model = VGGNet(pretrained=False, requires_grad=True)
     return FCN32s(pretrained_net=vgg_model, n_class=n_class)
 def get_fcn8s(n_class=1):
-    vgg_model = VGGNet(requires_grad=True)
+    vgg_model = VGGNet(pretrained=False, requires_grad=True)
     return FCN8s(pretrained_net=vgg_model, n_class=n_class)
 
 

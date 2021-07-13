@@ -1,7 +1,7 @@
 '''
 Author: your name
 Date: 2021-04-09 18:18:40
-LastEditTime: 2021-05-14 11:24:32
+LastEditTime: 2021-07-06 22:26:46
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: /leo/unetzoo/test.py
@@ -15,8 +15,7 @@ from core import getDataset
 from model import getModel
 from utils.expresult import ExpResult
 from utils.hyperparams import HyperParams
-from andytrainer import train
-from andytrainer import test
+
 import shutil
 import os
 from tqdm import tqdm
@@ -30,29 +29,27 @@ from core.confusionmetrics import ConfusionMetrics
 from core.file import read_mask, binary_image
 from core.segmetrics import get_dice, get_iou, get_hd
 
-# active contour loss function
-from core.loss_fn import ACELoss
 
 # training function
 from core.metricstable import MetricsTable
 
+
 if __name__ == '__main__':
         # 载入参数
     parser = argparse.ArgumentParser(description='PyTorch Training')
-    parser.add_argument('-g', '--gpu', type=str, choices=['0', '1'], default='0')
-    parser.add_argument('-m', '--model', type=str, default='design_three')
-    parser.add_argument('-l', '--loss', type=str,
-                        choices=['BCE', 'ACELoss', 'hybrid'], default='BCE')
+    parser.add_argument('-g', '--gpu', type=str, choices=['0', '1'], default='1')
+    parser.add_argument('-m', '--model', type=str, default='resnet34_unet')
+    parser.add_argument('-l', '--loss', type=str, choices=['BCE', 'ACELoss', 'hybrid'], default='BCE')
     parser.add_argument('-d', '--dataset', type=str,
                         choices=['liver', 'isbicell', 'dsb2018Cell', 'kagglelung', 'driveEye',
-                         'esophagus', 'corneal', 'racecar', 'COVID19', 'lung'], default='dsb2018Cell')
+                         'esophagus', 'corneal', 'racecar', 'COVID19', 'lung'], default='COVID19')
     parser.add_argument('--ngpu', default=2, type=int, metavar='G',
                         help='number of gpus to use')
     parser.add_argument('-j', '--workers', default=8, type=int, metavar='N',
                         help='number of data loading workers (default: 2)')
     parser.add_argument('--epochs', default=40, type=int, metavar='N',
                         help='number of total epochs to run')
-    parser.add_argument('-b', '--batch-size', default=3, type=int,
+    parser.add_argument('-b', '--batch-size', default=5, type=int,
                         metavar='N', help='mini-batch size (default: 2)')
     parser.add_argument('--threshold', default='None', type=str)
     parser.add_argument('--action', default='test', type=str)
@@ -68,7 +65,7 @@ if __name__ == '__main__':
     # 实验结果记录
     result = ExpResult(params)
     result.expinfo()
-    shutil.copy('result/unetzoo/20210514-105648-design_three-BCE-dsb2018Cell/train/design_three-dsb2018Cell-40-3.pth', result.exp_dir + '/train')
+    shutil.copy('result/unetzoo/20210609-150206-resnet34_unet-BCE-COVID19/train/resnet34_unet-COVID19-40-5.pth', result.exp_dir + '/train')
 
     os.environ['CUDA_VISIBLE_DEVICES'] = params.gpu
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -89,7 +86,6 @@ if __name__ == '__main__':
     # summary(model, (3, 576, 576))   # 显示模型参数
     train_dataloader, val_dataloader, test_dataloader = getDataset(
         params, x_transforms, y_transforms)
-    optimizer = optim.Adam(model.parameters())
     
     print('test start......')
     model = result.loadmodel(model)
@@ -100,13 +96,26 @@ if __name__ == '__main__':
         test_metrics = MetricsTable('test_metrics', result, params)
         num = len(test_dataloader)  # 测试集图片的总数
         for pic, _, pic_path, mask_path in test_dataloader:
+            
+            # # grad_cam图生成
+            # input_tensor = preprocess_image(pic, mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+            # cam = GradCAMPlusPlus(model=model, target_layer=target_layer, use_cuda=True)
+            # grayscale_cam = cam(input_tensor=input_tensor, target_category=None)
+            # grayscale_cam = grayscale_cam[0, :]
+            # grad_visualization = show_cam_on_image(pic, grayscale_cam)
             pic = pic.to(device)
             predict = model(pic)
+            
+
+            
             if params.deepsupervision:
                 predict = torch.squeeze(predict[-1]).cpu().numpy()
             else:
                 predict = torch.squeeze(predict).cpu().numpy()
             _,predict = cv2.threshold(predict, 0.1, 1, cv2.THRESH_BINARY)
+            
+
+
             # 图像二值化处理
             mask_img= read_mask(mask_path[0], np.size(predict,1))
             image_mask = binary_image(mask_img, 30)  # check it 
@@ -125,7 +134,17 @@ if __name__ == '__main__':
             hd = get_hd(predict, image_mask)
             test_metrics.addmetric(accuracy, precision, sensitivity, specificity, f1score, meanIoU, fwIoU, iou, dice, hd)
 
-            fig = plt.figure()
+            # # 保存激活图
+            # fig = plt.figure(figsize=(6, 6))
+            # plt.matshow(grad_visualization)
+            # if params.dataset == 'driveEye':
+            #     saved_predict = result.test_dir + '/grad/' + mask_path[0].split('/')[-1]
+            #     saved_predict = saved_predict.split('.')[0] + '.tif'
+            #     plt.savefig(saved_predict)
+            # else:
+            #     plt.savefig(result.test_dir + '/grad/' + mask_path[0].split('/')[-1][:-4] + "jpg")
+            
+            fig = plt.figure(figsize=(20,6))
             ax1 = fig.add_subplot(1, 3, 1)
             ax1.set_title('input')
             origin_img = Image.open(pic_path[0])
